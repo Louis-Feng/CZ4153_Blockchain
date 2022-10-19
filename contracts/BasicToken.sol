@@ -1,9 +1,9 @@
 pragma solidity >=0.4.22 <0.8.0;
-
+import "../utils/SafeMath.sol";
 
 //ERC Token Standard #20 Interface
 contract BasicToken {
-
+    using SafeMath for uint256;
     event Transfer(address indexed from, address indexed to, uint tokens);
     event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
 
@@ -34,8 +34,10 @@ contract BasicToken {
     function transfer(address receiver, uint numTokens) public returns (bool) {
         require(receiver != address(0));
         require(numTokens <= balances[msg.sender]);
-        balances[msg.sender] -= numTokens;
-        balances[receiver] += numTokens;
+        balances[msg.sender] = balances[msg.sender].sub(numTokens);
+        balances[msg.sender] = balances[msg.sender].add(numTokens);
+//        balances[msg.sender] -= numTokens;
+//        balances[receiver] += numTokens;
         emit Transfer(msg.sender, receiver, numTokens);
         return true;
     }
@@ -54,9 +56,10 @@ contract BasicToken {
         require(numTokens <= balances[owner]);
         require(numTokens <= allowed[owner][msg.sender]);
 
-        balances[owner] -= numTokens;
-        allowed[owner][msg.sender] -= numTokens;
-        balances[buyer] += numTokens;
+
+        balances[owner] = balances[owner].sub(numTokens);
+        allowed[owner][msg.sender] = allowed[owner][msg.sender].sub(numTokens);
+        balances[buyer] = balances[buyer].add(numTokens);
         emit Transfer(owner, buyer, numTokens);
         return true;
     }
