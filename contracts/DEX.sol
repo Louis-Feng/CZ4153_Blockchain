@@ -1,4 +1,4 @@
-pragma solidity ^0.4.0;
+pragma solidity >=0.4.22 <0.8.0;
 
 import "../utils/SafeMath.sol";
 
@@ -11,9 +11,8 @@ contract DEX {
         uint256 higher_priority;
         uint256 lower_priority;
     }
-    struct OrderBook {
-        uint256 higher_price;
-        uint256 lower_price;
+    struct OfferLinkedList {
+        uint256 next_price;
         mapping(uint256 => Offer) offer_list;
         uint256 highest_priority;
         uint256 lowest_priority;
@@ -21,14 +20,13 @@ contract DEX {
     }
     struct Token {
         address token_contract;
-        mapping(uint256 => OrderBook) buy_order_book;
-        uint256 max_bid_price;
-        uint256 min_bid_price;
-        uint256 amount_bid_prices;
-        mapping(uint256 => OrderBook) sell_order_book;
-        uint256 min_ask_price;
-        uint256 max_ask_price;
-        uint256 amount_ask_prices;
+        mapping(bytes32 => OrderBook) Book;
+    }
+    struct OrderBook {
+        mapping(uint256 => OfferLinkedList) prices;
+        uint256 first_price;
+        uint256 last_price;
+        uint256 number_of_prices;
     }
 
     mapping(address => Token) token_list;
@@ -37,17 +35,7 @@ contract DEX {
 
     mapping(address => string[]) token_address_list;
 
-//    event BuyMarketResult(
-//        bool completelyfulfilled,
-//        bool insufficientEtherAmount,
-//        bool insufficientOrderAmount
-//    );
-//
-//    event SellMarketResult(
-//        bool completelyfulfilled,
-//        bool insufficientTokenAmount,
-//        bool insufficientOrderAmount
-//    );
+
 
 
 }
