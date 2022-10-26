@@ -325,9 +325,10 @@ contract DEX {
 //        uint256 totalOffers = 0;
         ERC20API token = ERC20API(_token);
         ERC20API baseToken = ERC20API(_baseToken);
+        //This function assume this is a valid price
         // remove all offer_list for this price
         uint256 counter = orderBook.prices[_price].highest_priority;
-        while (counter <= orderBook.prices[_price].lowest_priority) {
+        while (counter <= orderBook.prices[_price].lowest_priority ) {
             if (
                 orderBook.prices[_price].offer_list[counter].offer_maker ==
                 msg.sender
@@ -416,8 +417,9 @@ contract DEX {
             } else {
                 // if we are in between order book list
                 uint256 previousPrice = orderBook.first_price;
-                while (orderBook.prices[previousPrice].next_price != _price) {
+                while (orderBook.prices[previousPrice].next_price != orderBook.last_price) {
                     previousPrice = orderBook.prices[previousPrice].next_price;
+                    if (orderBook.prices[previousPrice].next_price == _price) break;
                 }
                 if (_price == orderBook.last_price) {
                     // if this is the last price in order book list
