@@ -42,9 +42,9 @@ contract TokenA {
         return true;
     }
 
-    function approve(address delegate, uint numTokens) public returns (bool) {
-        allowed[msg.sender][delegate] = numTokens;
-        emit Approval(msg.sender, delegate, numTokens);
+    function approve(address _spender, uint numTokens) public returns (bool) {
+        allowed[_spender][msg.sender] = numTokens;
+        emit Approval(_spender ,msg.sender, numTokens);
         return true;
     }
 

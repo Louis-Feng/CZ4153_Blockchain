@@ -36,15 +36,15 @@ contract BasicToken {
         require(numTokens <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(numTokens);
         balances[msg.sender] = balances[msg.sender].add(numTokens);
-        //        balances[msg.sender] -= numTokens;
-        //        balances[receiver] += numTokens;
+                //balances[msg.sender] -= numTokens;
+                //balances[receiver] += numTokens;
         emit Transfer(msg.sender, receiver, numTokens);
         return true;
     }
 
     function approve(address _spender, uint numTokens) public returns (bool) {
-        allowed[msg.sender][_spender] = numTokens;
-        emit Approval(msg.sender, _spender, numTokens);
+        allowed[_spender][msg.sender] = numTokens;
+        emit Approval(_spender ,msg.sender, numTokens);
         return true;
     }
 
