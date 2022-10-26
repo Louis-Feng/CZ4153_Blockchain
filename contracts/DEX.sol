@@ -318,7 +318,9 @@ contract DEX {
             uint256 lastPrice = orderBook.last_price;
 
             if (lastPrice == 0 || is_sell && lastPrice < _price || !is_sell && lastPrice > _price) {
+                //insert this price to the end of the orderbook
                 if (firstPrice == 0) {
+                    //if this is also the first price
                     orderBook.first_price = _price;
                     orderBook.prices[_price].next_price = _price;
                 } else {
@@ -327,10 +329,12 @@ contract DEX {
                     orderBook.prices[_price].next_price = _price;
                 }
                 orderBook.last_price = _price;
-            } else if (is_sell && firstPrice > _price || !is_sell && firstPrice > _price) {
+            } else if (is_sell && firstPrice > _price || !is_sell && firstPrice < _price) {
+                //insert this price to the front of the orderbook
                 orderBook.prices[_price].next_price = firstPrice;
                 orderBook.first_price = _price;
             } else {
+                //insert this price in the middle of the orderbook
                 uint256 currentPrice = orderBook.first_price;
                 bool inserted = false;
                 while (currentPrice > 0 && !inserted) {
@@ -635,6 +639,7 @@ contract DEX {
                 && amountLeftToTrade > 0) {
 
                 if (orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount <= amountLeftToTrade){
+                    //this offer cannot fulfill the amount
 
                     totalEtherToTrade = ((orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount).mul(currentTradePrice)).div(1e3);
 
@@ -661,6 +666,7 @@ contract DEX {
                     amountLeftToTrade = amountLeftToTrade.sub(orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount);
                     //removeOrder(_basicToken, _token, !_isBuy, currentTradePrice);
                 } else {
+                    //this offer can fulfill the amount
                     totalEtherToTrade = (amountLeftToTrade.mul(currentTradePrice)).div(1e3);
 
                     require(
@@ -688,6 +694,7 @@ contract DEX {
                 if (offerPtr == orderBook.prices[currentTradePrice].lowest_priority &&
                     orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount == 0
                 ) {
+                    //if this price has no offer left, remove it from order book
                     orderBook.number_of_prices = orderBook.number_of_prices.sub(1);
                     orderBook.prices[currentTradePrice].offer_length = 0;
 
@@ -695,6 +702,7 @@ contract DEX {
                         currentTradePrice == orderBook.prices[currentTradePrice].next_price ||
                         orderBook.prices[currentTradePrice].next_price == 0
                     ) {
+                        //this price is the only price in the order book
                         orderBook.prices[currentTradePrice].next_price = 0;
                         orderBook.number_of_prices = 0;
                         orderBook.first_price = 0;
