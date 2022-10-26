@@ -170,9 +170,17 @@ contract DEX {
 
     }
 
+    function removeOrder(address _basicToken, address _token, bool _isSell, uint256 _price, uint256 _amount) public {
+
+    }
+
 
     function getTokenBalance(address user, address _tokenAddress) public view returns(uint256) {
         ERC20API tokenLoaded = ERC20API(_tokenAddress);
         return tokenLoaded.balanceOf(user);
+    }
+
+    function test(uint256 numTokens) public {
+        //return true;
     }
 }
