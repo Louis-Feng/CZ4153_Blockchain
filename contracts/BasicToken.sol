@@ -17,10 +17,10 @@ contract BasicToken {
 
     uint256 totalSupply_;
 
-    constructor(uint256 total, address owner) public {
+    constructor(uint256 total, address _owner) public {
         totalSupply_ = total;
-        balances[owner] = totalSupply_;
-        emit Transfer(address(0), owner, total);
+        balances[_owner] = totalSupply_;
+        emit Transfer(address(0), _owner, total);
     }
 
     function totalSupply() public view returns (uint256) {
@@ -36,32 +36,42 @@ contract BasicToken {
         require(numTokens <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(numTokens);
         balances[msg.sender] = balances[msg.sender].add(numTokens);
-//        balances[msg.sender] -= numTokens;
-//        balances[receiver] += numTokens;
+        //        balances[msg.sender] -= numTokens;
+        //        balances[receiver] += numTokens;
         emit Transfer(msg.sender, receiver, numTokens);
         return true;
     }
 
-    function approve(address delegate, uint numTokens) public returns (bool) {
-        allowed[msg.sender][delegate] = numTokens;
-        emit Approval(msg.sender, delegate, numTokens);
+    function approve(address _spender, uint numTokens) public returns (bool) {
+        allowed[msg.sender][_spender] = numTokens;
+        emit Approval(msg.sender, _spender, numTokens);
         return true;
     }
 
-    function allowance(address owner, address delegate) public view returns (uint) {
-        return allowed[owner][delegate];
+    function reduceAllowance(
+        address _owner,
+        address _spender,
+        uint256 _value
+    ) public returns (uint256 currentAllowance) {
+        allowed[_owner][_spender] = allowed[_owner][_spender].sub(_value);
+        emit Approval(_owner, _spender, _value);
+        return allowed[_owner][_spender];
     }
 
-    function transferFrom(address owner, address buyer, uint numTokens) public returns (bool) {
-        require(numTokens <= balances[owner]);
-        require(numTokens <= allowed[owner][msg.sender]);
+
+    function allowance(address _owner, address _spender) public view returns (uint) {
+        return allowed[_owner][_spender];
+    }
+
+    function transferFrom(address _owner, address buyer, uint numTokens) public returns (bool) {
+        require(numTokens <= balances[_owner]);
+        require(numTokens <= allowed[_owner][msg.sender]);
 
 
-        balances[owner] = balances[owner].sub(numTokens);
-        allowed[owner][msg.sender] = allowed[owner][msg.sender].sub(numTokens);
+        balances[_owner] = balances[_owner].sub(numTokens);
+        allowed[_owner][msg.sender] = allowed[_owner][msg.sender].sub(numTokens);
         balances[buyer] = balances[buyer].add(numTokens);
-        emit Transfer(owner, buyer, numTokens);
+        emit Transfer(_owner, buyer, numTokens);
         return true;
     }
 }
-
