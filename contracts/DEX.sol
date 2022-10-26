@@ -246,83 +246,68 @@ contract DEX {
         if (is_sell) {
             book_name = "sell";
         }
-        token_list[_token].Book[book_name].prices[_price].offer_length = token_list[_token]
-        .Book[book_name].prices[_price]
-        .offer_length
-        .add(1);
+        OrderBook storage orderBook = token_list[_token].Book[book_name];
+        orderBook.prices[_price].offer_length = orderBook.prices[_price].offer_length.add(1);
 
 //        emit test(_price);
-        if (token_list[_token].Book[book_name].prices[_price].offer_length == 1) {
-            token_list[_token].Book[book_name].prices[_price].highest_priority = 1;
-            token_list[_token].Book[book_name].prices[_price].lowest_priority = 1;
-            token_list[_token].Book[book_name].number_of_prices = token_list[_token]
-            .Book[book_name].number_of_prices
-            .add(1);
+        if (orderBook.prices[_price].offer_length == 1) {
+            //If this is the first offer at this price
+            orderBook.prices[_price].highest_priority = 1;
+            orderBook.prices[_price].lowest_priority = 1;
+            orderBook.number_of_prices = orderBook.number_of_prices.add(1);
 
-            token_list[_token].Book[book_name].prices[_price].offer_list[token_list[_token]
-            .Book[book_name].prices[_price]
-            .offer_length] = Offer(_amount, _maker, 0, 1);
+            orderBook.prices[_price].offer_list[orderBook.prices[_price].offer_length] = Offer(_amount, _maker, 0, 1);
 
-            uint256 firstPrice = token_list[_token].Book[book_name].first_price;
-            uint256 lastPrice = token_list[_token].Book[book_name].last_price;
+            uint256 firstPrice = orderBook.first_price;
+            uint256 lastPrice = orderBook.last_price;
 
             if (lastPrice == 0 || is_sell && lastPrice < _price || !is_sell && lastPrice > _price) {
                 if (firstPrice == 0) {
-                    token_list[_token].Book[book_name].first_price = _price;
-                    token_list[_token].Book[book_name].prices[_price].next_price = _price;
+                    orderBook.first_price = _price;
+                    orderBook.prices[_price].next_price = _price;
                 } else {
-                    token_list[_token].Book[book_name].prices[lastPrice]
+                    orderBook.prices[lastPrice]
                     .next_price = _price;
-                    token_list[_token].Book[book_name].prices[_price].next_price = _price;
+                    orderBook.prices[_price].next_price = _price;
                 }
-                token_list[_token].Book[book_name].last_price = _price;
+                orderBook.last_price = _price;
             } else if (is_sell && firstPrice > _price || !is_sell && firstPrice > _price) {
-                token_list[_token].Book[book_name].prices[_price]
-                .next_price = firstPrice;
-                token_list[_token].Book[book_name].first_price = _price;
+                orderBook.prices[_price].next_price = firstPrice;
+                orderBook.first_price = _price;
             } else {
-                uint256 currentPrice = token_list[_token].Book[book_name].first_price;
+                uint256 currentPrice = orderBook.first_price;
                 bool inserted = false;
                 while (currentPrice > 0 && !inserted) {
                     if (
                         is_sell &&
                         currentPrice < _price &&
-                        token_list[_token].Book[book_name].prices[currentPrice].next_price > _price
+                        orderBook.prices[currentPrice].next_price > _price
                         ||
                         !is_sell &&
                         currentPrice > _price &&
-                        token_list[_token].Book[book_name].prices[currentPrice].next_price < _price
+                        orderBook.prices[currentPrice].next_price < _price
                     ) {
-                        token_list[_token].Book[book_name].prices[_price]
-                        .next_price = token_list[_token].Book[book_name].prices[currentPrice]
-                        .next_price;
+                        orderBook.prices[_price].next_price = orderBook.prices[currentPrice].next_price;
 
-                        token_list[_token].Book[book_name].prices[currentPrice]
-                        .next_price = _price;
+                        orderBook.prices[currentPrice].next_price = _price;
                         inserted = true;
                     }
-                    currentPrice = token_list[_token].Book[book_name].prices[currentPrice]
-                    .next_price;
+                    currentPrice = orderBook.prices[currentPrice].next_price;
                 }
             }
 
         } else {
-            uint256 currentLowest = token_list[_token].Book[book_name].prices[_price]
-            .lowest_priority
-            .add(1);
-            token_list[_token].Book[book_name].prices[_price].offer_list[token_list[_token]
-            .Book[book_name].prices[_price]
-            .offer_length] = Offer(
+            uint256 currentLowest = orderBook.prices[_price].lowest_priority.add(1);
+            orderBook.prices[_price].offer_list[currentLowest] = Offer(
                 _amount,
                 _maker,
-                token_list[_token].Book[book_name].prices[_price].lowest_priority,
+                orderBook.prices[_price].lowest_priority,
                 currentLowest
             );
-            token_list[_token].Book[book_name].prices[_price].offer_list[token_list[_token]
-            .Book[book_name].prices[_price]
+            orderBook.prices[_price].offer_list[orderBook.prices[_price]
             .lowest_priority]
             .lower_priority = currentLowest;
-            token_list[_token].Book[book_name].prices[_price].lowest_priority = currentLowest;
+            orderBook.prices[_price].lowest_priority = currentLowest;
         }
     }
 
@@ -347,28 +332,8 @@ contract DEX {
                 orderBook.prices[_price].offer_list[counter].offer_maker ==
                 msg.sender
             ) {
-                if (!is_sell) {
-                    baseToken.reduceAllowance(
-                        msg.sender,
-                        address(this),
-                        (
-                        (
-                        orderBook.prices[_price].offer_list[counter]
-                        .offer_amount
-                        .mul(_price)
-                        )
-                        .div(1e18)
-                        )
-                    );
-                } else {
-                    token.reduceAllowance(
-                        msg.sender,
-                        address(this),
-                        orderBook.prices[_price].offer_list[counter].offer_amount
-                    );
-                }
-
 //                totalOffers = totalOffers.add(1);
+
                 orderBook.prices[_price].offer_length = orderBook.prices[_price]
                 .offer_length
                 .sub(1);
@@ -469,6 +434,7 @@ contract DEX {
             }
         }
     }
+
     function getOrders(address _token, bool is_sell)
     public
     view
@@ -480,10 +446,26 @@ contract DEX {
         }
         OrderBook storage orderBook = token_list[_token].Book[book_name];
 
-        uint256[] memory ordersPrices = new uint256[](token_list[_token].Book[book_name].number_of_prices);
-        uint256[] memory ordersVolumes = new uint256[](token_list[_token].Book[book_name].number_of_prices);
-
         uint256 currentPrice = orderBook.first_price;
+        uint256 no_total_offer = 0;
+        //loop the orderBook and increase no_total_offer
+        if (orderBook.first_price > 0) {
+            while (!is_sell && currentPrice <= orderBook.first_price ||
+            is_sell && currentPrice >= orderBook.first_price) {
+                no_total_offer += orderBook.prices[currentPrice].offer_length;
+
+                if (currentPrice == orderBook.prices[currentPrice].next_price) {
+                    break;
+                } else {
+                    currentPrice = orderBook.prices[currentPrice].next_price;
+                }
+            }
+        }
+
+        uint256[] memory ordersPrices = new uint256[](no_total_offer);
+        uint256[] memory ordersVolumes = new uint256[](no_total_offer);
+
+        currentPrice = orderBook.first_price;
         uint256 counter = 0;
 
         if (orderBook.first_price > 0) {
@@ -493,20 +475,19 @@ contract DEX {
                 uint256 offerPointer = orderBook.prices[currentPrice].highest_priority;
 
                 while (
-                    offerPointer <= orderBook.prices[currentPrice].offer_length
+                    offerPointer <= orderBook.prices[currentPrice].lowest_priority
                 ) {
-                    // priceVolume = priceVolume.add(
-                    //     loadedToken.buyBook[buyPrice].offers[offerPointer]
-                    //         .amount
-                    // );
-
                     ordersPrices[counter] = currentPrice;
                     ordersVolumes[counter] = orderBook.prices[currentPrice].offer_list[offerPointer].offer_amount;
 
-
                     counter = counter.add(1);
-                    offerPointer = offerPointer.add(1);
+                    if (offerPointer == orderBook.prices[currentPrice].offer_list[offerPointer].lower_priority){
+                        break;
+                    } else {
+                        offerPointer = orderBook.prices[currentPrice].offer_list[offerPointer].lower_priority;
+                    }
                 }
+
 
                 if (currentPrice == orderBook.prices[currentPrice].next_price) {
                     break;
@@ -518,137 +499,6 @@ contract DEX {
 
         return (ordersPrices, ordersVolumes);
     }
-//        } else {
-//            ERC20API baseToken = ERC20API(_baseToken);
-//            uint256 counter = loadedToken.buyBook[_price].highest_priority;
-//            while (counter <= loadedToken.buyBook[_price].offer_length) {
-//                if (
-//                    loadedToken.buyBook[_price].offer_list[counter].offer_maker ==
-//                    msg.sender
-//                ) {
-//                    baseToken.reduceAllowance(
-//                        msg.sender,
-//                        address(this),
-//                        (
-//                        (
-//                        orderBook.prices[_price].offer_list[counter]
-//                        .offer_amount
-//                        .mul(_price)
-//                        )
-//                        .div(1e18)
-//                        )
-//                    );
-//
-//                    totalOffers = totalOffers.add(1);
-//                    loadedToken.buyBook[_price].offer_length = loadedToken
-//                    .buyBook[_price]
-//                    .offer_length
-//                    .sub(1);
-//
-//                    if (
-//                        loadedToken.buyBook[_price].offer_list[counter]
-//                        .higher_priority == 0
-//                    ) {
-//                        // if this offer is first in queue
-//                        loadedToken.buyBook[_price]
-//                        .highest_priority = loadedToken.buyBook[_price]
-//                        .offer_list[counter]
-//                        .lower_priority;
-//                        loadedToken.buyBook[_price].offer_list[loadedToken
-//                        .buyBook[_price]
-//                        .offer_list[counter]
-//                        .lower_priority]
-//                        .higher_priority = 0;
-//                    } else if (
-//                        loadedToken.buyBook[_price].offer_list[counter]
-//                        .lower_priority ==
-//                        loadedToken.buyBook[_price].lowest_priority
-//                    ) {
-//                        // if this offer is last in queue
-//                        loadedToken.buyBook[_price].lowest_priority = loadedToken
-//                        .buyBook[_price]
-//                        .offer_list[counter]
-//                        .higher_priority;
-//                        loadedToken.buyBook[_price].offer_list[loadedToken
-//                        .buyBook[_price]
-//                        .offer_list[counter]
-//                        .higher_priority]
-//                        .lower_priority = loadedToken.buyBook[_price]
-//                        .lowest_priority;
-//                    } else {
-//                        // if offer is in between offer_list
-//                        loadedToken.buyBook[_price].offer_list[loadedToken
-//                        .buyBook[_price]
-//                        .offer_list[counter]
-//                        .higher_priority]
-//                        .lower_priority = loadedToken.buyBook[_price]
-//                        .offer_list[counter]
-//                        .lower_priority;
-//                        loadedToken.buyBook[_price].offer_list[loadedToken
-//                        .buyBook[_price]
-//                        .offer_list[counter]
-//                        .lower_priority]
-//                        .higher_priority = loadedToken.buyBook[_price]
-//                        .offer_list[counter]
-//                        .higher_priority;
-//                    }
-//                }
-//                if (counter == loadedToken.buyBook[_price].lowest_priority) {
-//                    break;
-//                }
-//                counter = loadedToken.buyBook[_price].offer_list[counter]
-//                .lower_priority;
-//            }
-//
-//            if (
-//                loadedToken.buyBook[_price].offer_length == 0 && totalOffers > 0
-//            ) {
-//                // if no. of offer_list for this price is 0, this price is empty, remove this order book
-//                if (
-//                    loadedToken.buyBook[_price].lowerPrice == 0 &&
-//                    loadedToken.buyBook[_price].higherPrice == _price
-//                ) {
-//                    // if this is the only price left
-//                    loadedToken.buyBook[_price].offer_length = 0;
-//                    loadedToken.buyBook[_price].higherPrice = 0;
-//                    loadedToken.buyBook[_price].lowerPrice = 0;
-//                    loadedToken.amountOfBuyPrices = 0;
-//                    loadedToken.minBuyPrice = 0;
-//                    loadedToken.maxBuyPrice = 0;
-//                } else if (loadedToken.buyBook[_price].lowerPrice == 0) {
-//                    // if this is the first price in order book list
-//                    loadedToken.buyBook[loadedToken.buyBook[_price].higherPrice]
-//                    .lowerPrice = 0;
-//                    loadedToken.minBuyPrice = loadedToken.buyBook[_price]
-//                    .higherPrice;
-//                    loadedToken.amountOfBuyPrices = loadedToken
-//                    .amountOfBuyPrices
-//                    .sub(1);
-//                } else if (loadedToken.buyBook[_price].higherPrice == _price) {
-//                    // if this is the last price in order book list
-//                    loadedToken.buyBook[loadedToken.buyBook[_price].lowerPrice]
-//                    .higherPrice = loadedToken.buyBook[_price].lowerPrice;
-//                    loadedToken.maxBuyPrice = loadedToken.buyBook[_price]
-//                    .lowerPrice;
-//                    loadedToken.amountOfBuyPrices = loadedToken
-//                    .amountOfBuyPrices
-//                    .sub(1);
-//                } else {
-//                    // if we are in between order book list
-//                    loadedToken.buyBook[loadedToken.buyBook[_price].lowerPrice]
-//                    .higherPrice = loadedToken.buyBook[_price].higherPrice;
-//                    loadedToken.buyBook[loadedToken.buyBook[_price].higherPrice]
-//                    .lowerPrice = loadedToken.buyBook[_price].lowerPrice;
-//                    loadedToken.amountOfBuyPrices = loadedToken
-//                    .amountOfBuyPrices
-//                    .sub(1);
-//                }
-//            }
-//        }
-
-
-
-
 
     function executeLimitOrder (
         address _basicToken,
@@ -767,9 +617,6 @@ contract DEX {
         }
     }
 
-    function storeOrder(address _token, bool _isSell, uint256 _price, uint256 amountLeftToTrade, address _sender) public {
-
-    }
 
 
     function getTokenBalance(address user, address _tokenAddress) public view returns(uint256) {
@@ -786,6 +633,39 @@ contract DEX {
         return true;
     }
 
+    function getOrderBookInfo(address _token, bool is_sell) public returns (uint256, uint256, uint256) {
+        bytes32 book_name = "buy";
+        if (is_sell) {
+            book_name = "sell";
+        }
+        OrderBook storage orderBook = token_list[_token].Book[book_name];
+        uint256 firstPrice = orderBook.first_price;
+        uint256 no_prices = orderBook.number_of_prices;
+        uint256 lastPrice = orderBook.last_price;
+        string memory name = "buy";
+        if (is_sell) {
+            name = "sell";
+        }
+        emit logOrderBook(name, no_prices, firstPrice, lastPrice);
+        return (no_prices, firstPrice, lastPrice);
+    }
+    function getOffersInfo(address _token, bool is_sell, uint256 _price) public returns (uint256, uint256, uint256, uint256) {
+        bytes32 book_name = "buy";
+        if (is_sell) {
+            book_name = "sell";
+        }
+        OfferLinkedList storage offers = token_list[_token].Book[book_name].prices[_price];
+        uint256  len = offers.offer_length;
+        uint256 highest_p = offers.highest_priority;
+        uint256 lowest_p = offers.lowest_priority;
+        uint256 next_price = offers.next_price;
+        emit logOfferList(len, highest_p, lowest_p, next_price);
+        return (len, highest_p, lowest_p, next_price);
+    }
+
     event logBytes32(bytes32 _type);
     event loguint256(uint256 message);
+    event logString(string _string);
+    event logOfferList(uint256 no_of_offers, uint256 highest_priority, uint256 lowest_priority, uint256 next_price);
+    event logOrderBook(string book_name, uint256 no_of_prices, uint256 first_price, uint256 last_price);
 }
