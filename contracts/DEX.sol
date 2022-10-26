@@ -49,6 +49,188 @@ contract DEX {
 
     mapping(address => string[]) token_address_list;
 
+
+    function executeTokenMarket(
+        address _baseToken,
+        address _tokenAddress,
+        uint256 _amount,
+        bytes32  _type
+    ) public returns (bool[] memory){
+        emit logBytes32(_type);
+        emit loguint256(_amount);
+        // fulfilled, insufficient token, insufficient buy orders
+        bool[] memory feedback = new bool[](3);
+        feedback[0] = false;
+        feedback[1] = false;
+        feedback[2] = false;
+
+        Token storage selfToken = token_list[_tokenAddress];
+        uint256 remainingAmount = _amount;
+        //question
+        //uint256 currentPrice = selfToken.buy_order_book.highest_priority;
+        //lowest price for buy order, highest price for sell order
+        uint256 currentPrice = selfToken.Book[_type].first_price;
+        uint256 currentOffer;
+        //uint256 ethAmount = 0;
+        bytes32 otherType;
+
+        if(equals(_type,"buy")){
+            otherType = "sell";
+        }else{
+            otherType = "buy";
+        }
+        emit logBytes32(otherType);
+        emit logBytes32(_type);
+
+        //ERC20API baseToken = ERC20API(_baseTokenAddress);
+        ERC20API token = ERC20API(_tokenAddress);
+        ERC20API baseToken = ERC20API(_baseToken);
+
+        //No offer for this token
+        if(selfToken.Book[otherType].number_of_prices == 0){
+            feedback[2] = true;
+            //possible entry for batched execution
+            return feedback;
+        }
+        while(remainingAmount > 0 && !feedback[1] && !feedback[2]){
+            //offerPointer
+            //currentOffer = selfToken.buy_order_book[currentPrice].highest_priority;
+            currentOffer = selfToken.Book[otherType].prices[currentPrice].highest_priority;
+
+            while (
+            //question
+                currentOffer <= selfToken.Book[otherType].prices[currentPrice].lowest_priority &&
+                remainingAmount > 0 &&
+                !feedback[1]
+            ) {
+
+                uint256 currentOfferAmount = selfToken.Book[otherType].prices[currentPrice]
+                .offer_list[currentOffer]
+                .offer_amount;
+
+                if(currentOfferAmount >= remainingAmount){
+                    //fully filled
+                    // currentOfferAmount >= remainingAmount
+                    if ((getTokenBalance(msg.sender, _tokenAddress) >= remainingAmount)){
+                        //msg.sender has enough token on his account
+                        //ethAmount = (remainingAmount.mul(currentPrice)).div(1e3);
+
+                        // approve exchange to move token to maker
+                        token.approve(
+                            msg.sender,
+                            address(this),
+                            remainingAmount
+                        );
+                        // send token to maker
+                        token.transferFrom(
+                            msg.sender,
+                            selfToken.Book[otherType].prices[currentPrice]
+                            .offer_list[currentOffer]
+                            .offer_maker,
+                            remainingAmount
+                        );
+                        // send weth to taker
+                        baseToken.transferFrom(
+                            selfToken.Book[otherType].prices[currentPrice]
+                            .offer_list[currentOffer]
+                            .offer_maker,
+                            msg.sender,
+                            (remainingAmount.mul(currentPrice)).div(1e3)
+                        );
+                        //question: should combine equal case to other else?
+                        if(currentOfferAmount == remainingAmount){
+                            //remove this order from order book
+                            //call remove offer
+
+                            //removeOrder(_baseToken,_token,_type.equals("sell") ? true : false,currentPrice);
+                            selfToken.Book[otherType].prices[currentPrice].offer_list[currentOffer]
+                            .offer_amount = 0;
+                            selfToken.Book[otherType].prices[currentPrice]
+                            .highest_priority = selfToken.Book[otherType].prices[currentPrice]
+                            .offer_list[currentOffer]
+                            .lower_priority;
+                            selfToken.Book[otherType].prices[currentPrice].offer_length = selfToken.Book[otherType].prices[currentPrice].offer_length.sub(1);
+
+                        }else{
+                            //keep the order, modify the amount
+                            selfToken.Book[otherType].prices[currentPrice].offer_list[currentOffer]
+                            .offer_amount =
+                            selfToken.Book[otherType].prices[currentPrice].offer_list[currentOffer].offer_amount
+                            .sub(remainingAmount);
+                        }
+                        remainingAmount = 0;
+
+                    }else{
+                        //currentOfferAmount >= remainingAmount > (getTokenBalance(msg.sender, _tokenAddress)
+                        return feedback;
+                    }
+
+                }else{
+                    //partially filled
+                    //currentOfferAmount < remainingAmount
+
+                    if ((getTokenBalance(msg.sender, _tokenAddress) >= remainingAmount)){
+                        ////currentOfferAmount < remainingAmount < msg.sender's token in account
+                        //msg.sender has enough token on his account
+                        //ethAmount = (currentOfferAmount.mul(currentPrice)).div(1e3);
+
+                        // approve exchange to move token to maker
+                        token.approve(
+                            msg.sender,
+                            address(this),
+                            currentOfferAmount
+                        );
+                        // send token to maker
+                        token.transferFrom(
+                            msg.sender,
+                            selfToken.Book[otherType].prices[currentPrice]
+                            .offer_list[currentOffer]
+                            .offer_maker,
+                            currentOfferAmount
+                        );
+                        // send weth to taker
+                        baseToken.transferFrom(
+                            selfToken.Book[otherType].prices[currentPrice]
+                            .offer_list[currentOffer]
+                            .offer_maker,
+                            msg.sender,
+                            (remainingAmount.mul(currentPrice)).div(1e3)
+                        );
+                        //remove offer
+                        //removeOrder(_baseToken,_token,_type.equals("sell") ? true : false,currentPrice);
+                        selfToken.Book[otherType].prices[currentPrice]
+                        .highest_priority = selfToken.Book[otherType].prices[currentPrice]
+                        .offer_list[currentOffer]
+                        .lower_priority;
+                        selfToken.Book[otherType].prices[currentPrice].offer_list[currentOffer]
+                        .offer_amount;
+                        selfToken.Book[otherType].prices[currentPrice].offer_length = selfToken.Book[otherType].prices[currentPrice].offer_length.sub(1);
+
+                        remainingAmount = remainingAmount.sub(currentOfferAmount);
+
+                    }else{
+                        //currentOfferAmount < remainingAmount
+                        // msg.sender's token in account < remainingAmount
+                        //depends on which one is smaller, currentOfferAmount or msg.sender's token in account
+                        feedback[1] = true;
+                    }
+                }
+                //这个price的order全没了
+            }
+            currentPrice = selfToken.Book[_type].first_price;
+
+        }
+        if (remainingAmount == 0) {
+            feedback[0] = true;
+        }
+        //emit MarketResult(feedback[0], feedback[1], feedback[2]);
+        return feedback;
+    }
+
+
+
+
+
     function executeLimitOrder (
         address _basicToken,
         address _token,
@@ -170,17 +352,17 @@ contract DEX {
 
     }
 
-    function removeOrder(address _basicToken, address _token, bool _isSell, uint256 _price, uint256 _amount) public {
-
-    }
-
 
     function getTokenBalance(address user, address _tokenAddress) public view returns(uint256) {
         ERC20API tokenLoaded = ERC20API(_tokenAddress);
         return tokenLoaded.balanceOf(user);
     }
 
-    function test(uint256 numTokens) public {
-        //return true;
+    //string comparison
+    function equals(bytes32 str1, bytes32 str2) public pure returns(bool) {
+        return (str1 == str2);
     }
+
+    event logBytes32(bytes32 _type);
+    event loguint256(uint256 message);
 }
