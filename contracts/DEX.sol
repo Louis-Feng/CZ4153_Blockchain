@@ -383,8 +383,21 @@ contract DEX {
         ERC20API baseToken = ERC20API(_baseToken);
         //This function assume this is a valid price
         // remove all offer_list for this price
-        uint256 counter = orderBook.prices[_price].highest_priority;
-        while (counter <= orderBook.prices[_price].lowest_priority ) {
+        uint256 counter = orderBook.first_price;
+        bool found = false;
+        if (orderBook.first_price == _price ) found = true;
+        while (counter != orderBook.last_price && !found) {
+            counter = orderBook.prices[counter].next_price;
+            if (counter == _price) {
+                found = true;
+                break;
+            }
+        }
+        if (found) {
+            emit logString("found");
+        }
+        counter = orderBook.prices[_price].highest_priority;
+        while (counter <= orderBook.prices[_price].lowest_priority && found) {
             if (
                 orderBook.prices[_price].offer_list[counter].offer_maker ==
                 msg.sender
@@ -450,7 +463,7 @@ contract DEX {
 
         // If offer list is empty, remove the price from price list
         if (
-            orderBook.prices[_price].offer_length == 0
+            orderBook.prices[_price].offer_length == 0 && found
 //            orderBook.prices[_price].offer_length == 0 && totalOffers > 0
         ) {
             if (
@@ -462,7 +475,7 @@ contract DEX {
                 orderBook.prices[_price].next_price = 0;
                 orderBook.number_of_prices = 0;
                 orderBook.first_price = 0;
-                orderBook.first_price = 0;
+                orderBook.last_price = 0;
             } else if (orderBook.first_price == _price) {
                 // if this is the first price in order book list
                 orderBook.first_price = orderBook.prices[_price]
@@ -473,9 +486,8 @@ contract DEX {
             } else {
                 // if we are in between order book list
                 uint256 previousPrice = orderBook.first_price;
-                while (orderBook.prices[previousPrice].next_price != orderBook.last_price) {
+                while (orderBook.prices[previousPrice].next_price != _price) {
                     previousPrice = orderBook.prices[previousPrice].next_price;
-                    if (orderBook.prices[previousPrice].next_price == _price) break;
                 }
                 if (_price == orderBook.last_price) {
                     // if this is the last price in order book list
@@ -489,6 +501,30 @@ contract DEX {
                 orderBook.number_of_prices = orderBook
                 .number_of_prices
                 .sub(1);
+                // if we are in between order book list
+//                uint256 previousPrice = orderBook.first_price;
+//                while (orderBook.prices[previousPrice].next_price != orderBook.last_price) {
+//                    previousPrice = orderBook.prices[previousPrice].next_price;
+//                    if (orderBook.prices[previousPrice].next_price == _price) break;
+//                }
+//                if (_price == orderBook.last_price) {
+//                    // if this is the last price in order book list
+//                    orderBook.prices[previousPrice].next_price = previousPrice;
+//                    orderBook.last_price = previousPrice;
+//                    orderBook.number_of_prices = orderBook
+//                    .number_of_prices
+//                    .sub(1);
+//                } else if (orderBook.prices[previousPrice].next_price != orderBook.last_price){
+//                    // if we are in between order book list
+//                    orderBook.prices[previousPrice].next_price
+//                    = orderBook.prices[_price].next_price;
+//                    orderBook.number_of_prices = orderBook
+//                    .number_of_prices
+//                    .sub(1);
+//                }
+//                orderBook.number_of_prices = orderBook
+//                .number_of_prices
+//                .sub(1);
             }
         }
     }
