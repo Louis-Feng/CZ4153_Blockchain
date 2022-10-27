@@ -149,7 +149,7 @@ contract DEX {
                             (remainingAmount.mul(currentPrice)).div(1e3)
                         );
                     }else{
-                        require(getTokenBalance(msg.sender, _tokenAddress) >= remainingAmount, "buyer has insufficient token");
+                        require(getTokenBalance(msg.sender, _tokenAddress) >= remainingAmount, "seller has insufficient token");
                         // approve exchange to move token to maker
                         token.approve(
                             msg.sender,
@@ -180,62 +180,82 @@ contract DEX {
                             (remainingAmount.mul(currentPrice)).div(1e3)
                         );
                     }
-                    if ((getTokenBalance(msg.sender, _tokenAddress) >= remainingAmount)){
 
-                        //question: should combine equal case to other else?
-                        if(currentOfferAmount == remainingAmount){
-                            emit logString("currentOfferAmount == remainingAmount");
-                            //remove this order from order book
-                            //call remove offer
+                            //question: should combine equal case to other else?
+                            if(currentOfferAmount == remainingAmount){
+                                emit logString("currentOfferAmount == remainingAmount");
 
-                            //removeOrder(_baseToken,_token,_type.equals("sell") ? true : false,currentPrice);
-                            selfToken.Book[otherType].prices[currentPrice].offer_list[currentOffer]
-                            .offer_amount = 0;
+                                //removeOrder(_baseToken,_token,_type.equals("sell") ? true : false,currentPrice);
+                                selfToken.Book[otherType].prices[currentPrice].offer_list[currentOffer]
+                                .offer_amount = 0;
 
-                            selfToken.Book[otherType].prices[currentPrice]
-                            .highest_priority = selfToken.Book[otherType].prices[currentPrice]
-                            .offer_list[currentOffer]
-                            .lower_priority;
+                                selfToken.Book[otherType].prices[currentPrice]
+                                .highest_priority = selfToken.Book[otherType].prices[currentPrice]
+                                .offer_list[currentOffer]
+                                .lower_priority;
 
-                            selfToken.Book[otherType].prices[currentPrice].offer_length = selfToken.Book[otherType].prices[currentPrice].offer_length.sub(1);
+                                selfToken.Book[otherType].prices[currentPrice].offer_length = selfToken.Book[otherType].prices[currentPrice].offer_length.sub(1);
 
-                            emit loguint256("Current Offer Amount", selfToken.Book[otherType].prices[currentPrice].offer_list[currentOffer]
-                                .offer_amount);
-                            emit loguint256("Current Offer highest priority", selfToken.Book[otherType].prices[currentPrice]
-                                .highest_priority);
-                            emit loguint256("Offer length", selfToken.Book[otherType].prices[currentPrice].offer_length);
-                        }else{
-                            emit logString("currentOfferAmount != remainingAmount");
-                            //keep the order, modify the amount
-                            selfToken.Book[otherType].prices[currentPrice].offer_list[currentOffer]
-                            .offer_amount =
-                            selfToken.Book[otherType].prices[currentPrice].offer_list[currentOffer].offer_amount
-                            .sub(remainingAmount);
+                                emit loguint256("Current Offer Amount", selfToken.Book[otherType].prices[currentPrice].offer_list[currentOffer]
+                                    .offer_amount);
+                                emit loguint256("Current Offer highest priority", selfToken.Book[otherType].prices[currentPrice]
+                                    .highest_priority);
+                                emit loguint256("Offer length", selfToken.Book[otherType].prices[currentPrice].offer_length);
+                            }else{
+                                emit logString("currentOfferAmount != remainingAmount");
+                                //keep the order, modify the amount
+                                selfToken.Book[otherType].prices[currentPrice].offer_list[currentOffer]
+                                .offer_amount =
+                                selfToken.Book[otherType].prices[currentPrice].offer_list[currentOffer].offer_amount
+                                .sub(remainingAmount);
 
-                            emit loguint256("Current Offer Amount", selfToken.Book[otherType].prices[currentPrice].offer_list[currentOffer]
-                                .offer_amount);
-                            emit loguint256("Current Offer highest priority", selfToken.Book[otherType].prices[currentPrice]
-                                .highest_priority);
-                            emit loguint256("Offer length", selfToken.Book[otherType].prices[currentPrice].offer_length);
-                        }
-                        remainingAmount = 0;
+                                emit loguint256("Current Offer Amount", selfToken.Book[otherType].prices[currentPrice].offer_list[currentOffer]
+                                    .offer_amount);
+                                emit loguint256("Current Offer highest priority", selfToken.Book[otherType].prices[currentPrice]
+                                    .highest_priority);
+                                emit loguint256("Offer length", selfToken.Book[otherType].prices[currentPrice].offer_length);
+                            }
+                            remainingAmount = 0;
 
-                    }else{
-                        //currentOfferAmount >= remainingAmount > (getTokenBalance(msg.sender, _tokenAddress)
-                        emit logString("Order canceled");
-                        return feedback;
-                    }
+
 
                 }else{
                     emit logString("currentOfferAmount < remainingAmount");
                     //partially filled
                     //currentOfferAmount < remainingAmount
+                    if(equals(_type,"buy")){
+                        require(getTokenBalance(msg.sender, _baseToken) >= currentOfferAmount, "buyer has insufficient Ether");
 
-                    if ((getTokenBalance(msg.sender, _tokenAddress) >= remainingAmount)){
-                        emit logString("(getTokenBalance(msg.sender, _tokenAddress) >= remainingAmount)");
-                        ////currentOfferAmount < remainingAmount < msg.sender's token in account
-                        //msg.sender has enough token on his account
-                        //ethAmount = (currentOfferAmount.mul(currentPrice)).div(1e3);
+                        // approve exchange to move token to maker
+                        baseToken.approve(
+                            msg.sender,
+                            currentOfferAmount
+                        );
+                        // send token to maker
+                        baseToken.transferFrom(
+                            msg.sender,
+                            selfToken.Book[otherType].prices[currentPrice]
+                            .offer_list[currentOffer]
+                            .offer_maker,
+                            currentOfferAmount
+                        );
+                        // approve exchange to move baseToken to maker
+                        token.approve(
+                            selfToken.Book[otherType].prices[currentPrice]
+                            .offer_list[currentOffer]
+                            .offer_maker,
+                            (remainingAmount.mul(currentPrice)).div(1e3)
+                        );
+                        // send weth to taker
+                        token.transferFrom(
+                            selfToken.Book[otherType].prices[currentPrice]
+                            .offer_list[currentOffer]
+                            .offer_maker,
+                            msg.sender,
+                            (remainingAmount.mul(currentPrice)).div(1e3)
+                        );
+                    }else{
+                        require(getTokenBalance(msg.sender, _tokenAddress) >= currentOfferAmount, "seller has insufficient token");
 
                         // approve exchange to move token to maker
                         token.approve(
@@ -255,7 +275,7 @@ contract DEX {
                             selfToken.Book[otherType].prices[currentPrice]
                             .offer_list[currentOffer]
                             .offer_maker,
-                                (remainingAmount.mul(currentPrice)).div(1e3)
+                            (remainingAmount.mul(currentPrice)).div(1e3)
                         );
                         // send weth to taker
                         baseToken.transferFrom(
@@ -265,6 +285,11 @@ contract DEX {
                             msg.sender,
                             (remainingAmount.mul(currentPrice)).div(1e3)
                         );
+                    }
+
+                        //msg.sender has enough token on his account
+                        //ethAmount = (currentOfferAmount.mul(currentPrice)).div(1e3);
+
                         //remove offer
                         //removeOrder(_baseToken,_token,_type.equals("sell") ? true : false,currentPrice);
                         selfToken.Book[otherType].prices[currentPrice]
@@ -283,13 +308,7 @@ contract DEX {
 
                         remainingAmount = remainingAmount.sub(currentOfferAmount);
 
-                    }else{
-                        //currentOfferAmount < remainingAmount
-                        // msg.sender's token in account < remainingAmount
-                        //depends on which one is smaller, currentOfferAmount or msg.sender's token in account
-                        emit logString("feedback[1] = true");
-                        feedback[1] = true;
-                    }
+
                 }
 
                 if (currentOffer == selfToken.Book[otherType].prices[currentPrice].lowest_priority &&
