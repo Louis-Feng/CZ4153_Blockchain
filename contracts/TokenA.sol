@@ -32,19 +32,21 @@ contract TokenA {
     }
 
     function transfer(address receiver, uint numTokens) public returns (bool) {
+        uint256 value = numTokens.mul(10 ** this.decimals());
         require(receiver != address(0));
-        require(numTokens <= balances[msg.sender]);
-        balances[msg.sender] = balances[msg.sender].sub(numTokens);
-        balances[msg.sender] = balances[msg.sender].add(numTokens);
-        //        balances[msg.sender] -= numTokens;
-        //        balances[receiver] += numTokens;
-        emit Transfer(msg.sender, receiver, numTokens);
+        require(value <= balances[msg.sender]);
+        balances[msg.sender] = balances[msg.sender].sub(value);
+        balances[msg.sender] = balances[msg.sender].add(value);
+        //        balances[msg.sender] -= value;
+        //        balances[receiver] += value;
+        emit Transfer(msg.sender, receiver, value);
         return true;
     }
 
     function approve(address _spender, uint numTokens) public returns (bool) {
-        allowed[_spender][msg.sender] = numTokens;
-        emit Approval(_spender ,msg.sender, numTokens);
+        uint256 value = numTokens.mul(10 ** this.decimals());
+        allowed[_spender][msg.sender] = value;
+        emit Approval(_spender ,msg.sender, value);
         return true;
     }
 
@@ -53,14 +55,15 @@ contract TokenA {
     }
 
     function transferFrom(address owner, address buyer, uint numTokens) public returns (bool) {
-        require(numTokens <= balances[owner]);
-        require(numTokens <= allowed[owner][msg.sender]);
+        uint256 value = numTokens.mul(10 ** this.decimals());
+        require(value <= balances[owner]);
+        require(value <= allowed[owner][msg.sender]);
 
 
-        balances[owner] = balances[owner].sub(numTokens);
-        allowed[owner][msg.sender] = allowed[owner][msg.sender].sub(numTokens);
-        balances[buyer] = balances[buyer].add(numTokens);
-        emit Transfer(owner, buyer, numTokens);
+        balances[owner] = balances[owner].sub(value);
+        allowed[owner][msg.sender] = allowed[owner][msg.sender].sub(value);
+        balances[buyer] = balances[buyer].add(value);
+        emit Transfer(owner, buyer, value);
         return true;
     }
 }
