@@ -318,7 +318,9 @@ contract DEX {
             uint256 lastPrice = orderBook.last_price;
 
             if (lastPrice == 0 || is_sell && lastPrice < _price || !is_sell && lastPrice > _price) {
+                //insert this price to the end of the orderbook
                 if (firstPrice == 0) {
+                    //if this is also the first price
                     orderBook.first_price = _price;
                     orderBook.prices[_price].next_price = _price;
                 } else {
@@ -327,10 +329,12 @@ contract DEX {
                     orderBook.prices[_price].next_price = _price;
                 }
                 orderBook.last_price = _price;
-            } else if (is_sell && firstPrice > _price || !is_sell && firstPrice > _price) {
+            } else if (is_sell && firstPrice > _price || !is_sell && firstPrice < _price) {
+                //insert this price to the front of the orderbook
                 orderBook.prices[_price].next_price = firstPrice;
                 orderBook.first_price = _price;
             } else {
+                //insert this price in the middle of the orderbook
                 uint256 currentPrice = orderBook.first_price;
                 bool inserted = false;
                 while (currentPrice > 0 && !inserted) {
@@ -381,9 +385,23 @@ contract DEX {
 //        uint256 totalOffers = 0;
         ERC20API token = ERC20API(_token);
         ERC20API baseToken = ERC20API(_baseToken);
+        //This function assume this is a valid price
         // remove all offer_list for this price
-        uint256 counter = orderBook.prices[_price].highest_priority;
-        while (counter <= orderBook.prices[_price].lowest_priority) {
+        uint256 counter = orderBook.first_price;
+        bool found = false;
+        if (orderBook.first_price == _price ) found = true;
+        while (counter != orderBook.last_price && !found) {
+            counter = orderBook.prices[counter].next_price;
+            if (counter == _price) {
+                found = true;
+                break;
+            }
+        }
+        if (found) {
+            emit logString("found");
+        }
+        counter = orderBook.prices[_price].highest_priority;
+        while (counter <= orderBook.prices[_price].lowest_priority && found) {
             if (
                 orderBook.prices[_price].offer_list[counter].offer_maker ==
                 msg.sender
@@ -449,7 +467,7 @@ contract DEX {
 
         // If offer list is empty, remove the price from price list
         if (
-            orderBook.prices[_price].offer_length == 0
+            orderBook.prices[_price].offer_length == 0 && found
 //            orderBook.prices[_price].offer_length == 0 && totalOffers > 0
         ) {
             if (
@@ -461,7 +479,7 @@ contract DEX {
                 orderBook.prices[_price].next_price = 0;
                 orderBook.number_of_prices = 0;
                 orderBook.first_price = 0;
-                orderBook.first_price = 0;
+                orderBook.last_price = 0;
             } else if (orderBook.first_price == _price) {
                 // if this is the first price in order book list
                 orderBook.first_price = orderBook.prices[_price]
@@ -487,6 +505,30 @@ contract DEX {
                 orderBook.number_of_prices = orderBook
                 .number_of_prices
                 .sub(1);
+                // if we are in between order book list
+//                uint256 previousPrice = orderBook.first_price;
+//                while (orderBook.prices[previousPrice].next_price != orderBook.last_price) {
+//                    previousPrice = orderBook.prices[previousPrice].next_price;
+//                    if (orderBook.prices[previousPrice].next_price == _price) break;
+//                }
+//                if (_price == orderBook.last_price) {
+//                    // if this is the last price in order book list
+//                    orderBook.prices[previousPrice].next_price = previousPrice;
+//                    orderBook.last_price = previousPrice;
+//                    orderBook.number_of_prices = orderBook
+//                    .number_of_prices
+//                    .sub(1);
+//                } else if (orderBook.prices[previousPrice].next_price != orderBook.last_price){
+//                    // if we are in between order book list
+//                    orderBook.prices[previousPrice].next_price
+//                    = orderBook.prices[_price].next_price;
+//                    orderBook.number_of_prices = orderBook
+//                    .number_of_prices
+//                    .sub(1);
+//                }
+//                orderBook.number_of_prices = orderBook
+//                .number_of_prices
+//                .sub(1);
             }
         }
     }
@@ -597,6 +639,7 @@ contract DEX {
                 && amountLeftToTrade > 0) {
 
                 if (orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount <= amountLeftToTrade){
+                    //this offer cannot fulfill the amount
 
                     totalEtherToTrade = ((orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount).mul(currentTradePrice)).div(1e3);
 
@@ -623,6 +666,7 @@ contract DEX {
                     amountLeftToTrade = amountLeftToTrade.sub(orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount);
                     //removeOrder(_basicToken, _token, !_isBuy, currentTradePrice);
                 } else {
+                    //this offer can fulfill the amount
                     totalEtherToTrade = (amountLeftToTrade.mul(currentTradePrice)).div(1e3);
 
                     require(
@@ -650,6 +694,7 @@ contract DEX {
                 if (offerPtr == orderBook.prices[currentTradePrice].lowest_priority &&
                     orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount == 0
                 ) {
+                    //if this price has no offer left, remove it from order book
                     orderBook.number_of_prices = orderBook.number_of_prices.sub(1);
                     orderBook.prices[currentTradePrice].offer_length = 0;
 
@@ -657,6 +702,7 @@ contract DEX {
                         currentTradePrice == orderBook.prices[currentTradePrice].next_price ||
                         orderBook.prices[currentTradePrice].next_price == 0
                     ) {
+                        //this price is the only price in the order book
                         orderBook.prices[currentTradePrice].next_price = 0;
                         orderBook.number_of_prices = 0;
                         orderBook.first_price = 0;
