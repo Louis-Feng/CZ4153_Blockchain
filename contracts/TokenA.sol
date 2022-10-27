@@ -33,7 +33,7 @@ contract TokenA is IERC20 {
     }
 
     function transfer(address receiver, uint numTokens) public returns (bool) {
-        uint256 value = numTokens.mul(10 ** this.decimals());
+        uint256 value = numTokens.mul(10 ** uint256(this.decimals()));
         require(receiver != address(0));
         require(value <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(value);
@@ -45,7 +45,7 @@ contract TokenA is IERC20 {
     }
 
     function approve(address _spender, uint numTokens) public returns (bool) {
-        uint256 value = numTokens.mul(10 ** this.decimals());
+        uint256 value = numTokens.mul(10 ** uint256(this.decimals()));
         allowed[_spender][msg.sender] = value;
         emit Approval(_spender ,msg.sender, value);
         return true;
@@ -56,7 +56,7 @@ contract TokenA is IERC20 {
     }
 
     function transferFrom(address owner, address buyer, uint numTokens) public returns (bool) {
-        uint256 value = numTokens.mul(10 ** this.decimals());
+        uint256 value = numTokens.mul(10 ** uint256(this.decimals()));
         require(value <= balances[owner]);
         require(value <= allowed[owner][msg.sender]);
 
