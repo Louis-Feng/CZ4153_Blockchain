@@ -1,15 +1,16 @@
 pragma solidity >=0.4.22 <0.8.0;
 import "../utils/SafeMath.sol";
+import "./IERC20.sol";
 
 //ERC Token Standard #20 Interface
-contract TokenA {
+contract TokenA is IERC20 {
     using SafeMath for uint256;
     event Transfer(address indexed from, address indexed to, uint tokens);
     event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
 
     string public constant name = "Token A";
     string public constant symbol = "TA";
-    uint8 public constant decimals = 5;
+    uint8 public constant decimals = 2;
 
     mapping(address => uint256) balances;
 
@@ -66,5 +67,6 @@ contract TokenA {
         emit Transfer(owner, buyer, value);
         return true;
     }
+
 }
 
