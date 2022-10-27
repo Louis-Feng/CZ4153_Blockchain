@@ -106,18 +106,21 @@ contract DEX {
                 selfToken.Book[otherType].prices[currentPrice].offer_list[currentOffer].higher_priority,
                 selfToken.Book[otherType].prices[currentPrice].offer_list[currentOffer].lower_priority);
             while (
-            //question
                 currentOffer <= selfToken.Book[otherType].prices[currentPrice].lowest_priority &&
                 remainingAmount > 0 &&
                 !feedback[1]
             ) {
 
-                uint256 currentOfferAmount = selfToken.Book[otherType].prices[currentPrice]
+//                uint256 currentOfferAmount = selfToken.Book[otherType].prices[currentPrice]
+//                .offer_list[currentOffer]
+//                .offer_amount;
+                emit loguint256("Current Offer Amount", selfToken.Book[otherType].prices[currentPrice]
                 .offer_list[currentOffer]
-                .offer_amount;
-                emit loguint256("Current Offer Amount", currentOfferAmount);
+                    .offer_amount);
 
-                if(currentOfferAmount >= remainingAmount){
+                if(selfToken.Book[otherType].prices[currentPrice]
+                .offer_list[currentOffer]
+                .offer_amount >= remainingAmount){
                     emit logString("currentOfferAmount >= remainingAmount");
                     //fully filled
                     // currentOfferAmount >= remainingAmount
@@ -142,7 +145,7 @@ contract DEX {
                             selfToken.Book[otherType].prices[currentPrice]
                             .offer_list[currentOffer]
                             .offer_maker,
-                            (remainingAmount.mul(currentPrice)).div(1e3)
+                            (remainingAmount.mul(currentPrice))
                         );
                         // send weth to taker
                         token.transferFrom(
@@ -150,7 +153,7 @@ contract DEX {
                             .offer_list[currentOffer]
                             .offer_maker,
                             msg.sender,
-                            (remainingAmount.mul(currentPrice)).div(1e3)
+                            (remainingAmount.mul(currentPrice))
                         );
                     }else{
                         require(getTokenBalance(msg.sender, _tokenAddress) >= remainingAmount, "seller has insufficient token");
@@ -173,7 +176,7 @@ contract DEX {
                             selfToken.Book[otherType].prices[currentPrice]
                             .offer_list[currentOffer]
                             .offer_maker,
-                            (remainingAmount.mul(currentPrice)).div(1e3)
+                            (remainingAmount.mul(currentPrice))
                         );
                         // send weth to taker
                         baseToken.transferFrom(
@@ -181,12 +184,14 @@ contract DEX {
                             .offer_list[currentOffer]
                             .offer_maker,
                             msg.sender,
-                            (remainingAmount.mul(currentPrice)).div(1e3)
+                            (remainingAmount.mul(currentPrice))
                         );
                     }
 
                             //question: should combine equal case to other else?
-                            if(currentOfferAmount == remainingAmount){
+                            if(selfToken.Book[otherType].prices[currentPrice]
+                            .offer_list[currentOffer]
+                            .offer_amount == remainingAmount){
                                 emit logString("currentOfferAmount == remainingAmount");
 
                                 //removeOrder(_baseToken,_token,_type.equals("sell") ? true : false,currentPrice);
@@ -228,12 +233,16 @@ contract DEX {
                     //partially filled
                     //currentOfferAmount < remainingAmount
                     if(equals(_type,"buy")){
-                        require(getTokenBalance(msg.sender, _baseToken) >= currentOfferAmount, "buyer has insufficient Ether");
+                        require(getTokenBalance(msg.sender, _baseToken) >= selfToken.Book[otherType].prices[currentPrice]
+                        .offer_list[currentOffer]
+                        .offer_amount, "buyer has insufficient Ether");
 
                         // approve exchange to move token to maker
                         baseToken.approve(
                             msg.sender,
-                            currentOfferAmount
+                                selfToken.Book[otherType].prices[currentPrice]
+                                .offer_list[currentOffer]
+                                .offer_amount
                         );
                         // send token to maker
                         baseToken.transferFrom(
@@ -241,14 +250,16 @@ contract DEX {
                             selfToken.Book[otherType].prices[currentPrice]
                             .offer_list[currentOffer]
                             .offer_maker,
-                            currentOfferAmount
+                                selfToken.Book[otherType].prices[currentPrice]
+                                .offer_list[currentOffer]
+                                .offer_amount
                         );
                         // approve exchange to move baseToken to maker
                         token.approve(
                             selfToken.Book[otherType].prices[currentPrice]
                             .offer_list[currentOffer]
                             .offer_maker,
-                            (remainingAmount.mul(currentPrice)).div(1e3)
+                            (remainingAmount.mul(currentPrice))
                         );
                         // send weth to taker
                         token.transferFrom(
@@ -256,15 +267,19 @@ contract DEX {
                             .offer_list[currentOffer]
                             .offer_maker,
                             msg.sender,
-                            (remainingAmount.mul(currentPrice)).div(1e3)
+                            (remainingAmount.mul(currentPrice))
                         );
                     }else{
-                        require(getTokenBalance(msg.sender, _tokenAddress) >= currentOfferAmount, "seller has insufficient token");
+                        require(getTokenBalance(msg.sender, _tokenAddress) >= selfToken.Book[otherType].prices[currentPrice]
+                        .offer_list[currentOffer]
+                        .offer_amount, "seller has insufficient token");
 
                         // approve exchange to move token to maker
                         token.approve(
                             msg.sender,
-                            currentOfferAmount
+                                selfToken.Book[otherType].prices[currentPrice]
+                                .offer_list[currentOffer]
+                                .offer_amount
                         );
                         // send token to maker
                         token.transferFrom(
@@ -272,14 +287,16 @@ contract DEX {
                             selfToken.Book[otherType].prices[currentPrice]
                             .offer_list[currentOffer]
                             .offer_maker,
-                            currentOfferAmount
+                                selfToken.Book[otherType].prices[currentPrice]
+                                .offer_list[currentOffer]
+                                .offer_amount
                         );
                         // approve exchange to move baseToken to maker
                         baseToken.approve(
                             selfToken.Book[otherType].prices[currentPrice]
                             .offer_list[currentOffer]
                             .offer_maker,
-                            (remainingAmount.mul(currentPrice)).div(1e3)
+                            (remainingAmount.mul(currentPrice))
                         );
                         // send weth to taker
                         baseToken.transferFrom(
@@ -287,7 +304,7 @@ contract DEX {
                             .offer_list[currentOffer]
                             .offer_maker,
                             msg.sender,
-                            (remainingAmount.mul(currentPrice)).div(1e3)
+                            (remainingAmount.mul(currentPrice))
                         );
                     }
 
@@ -296,12 +313,15 @@ contract DEX {
 
                         //remove offer
                         //removeOrder(_baseToken,_token,_type.equals("sell") ? true : false,currentPrice);
+                        remainingAmount = remainingAmount.sub(selfToken.Book[otherType].prices[currentPrice]
+                        .offer_list[currentOffer]
+                            .offer_amount);
                         selfToken.Book[otherType].prices[currentPrice]
                         .highest_priority = selfToken.Book[otherType].prices[currentPrice]
                         .offer_list[currentOffer]
                         .lower_priority;
                         selfToken.Book[otherType].prices[currentPrice].offer_list[currentOffer]
-                        .offer_amount;
+                        .offer_amount = 0;
                         selfToken.Book[otherType].prices[currentPrice].offer_length = selfToken.Book[otherType].prices[currentPrice].offer_length.sub(1);
 
                         emit loguint256("Current Offer Amount", selfToken.Book[otherType].prices[currentPrice].offer_list[currentOffer]
@@ -310,7 +330,7 @@ contract DEX {
                             .highest_priority);
                         emit loguint256("Offer length", selfToken.Book[otherType].prices[currentPrice].offer_length);
 
-                        remainingAmount = remainingAmount.sub(currentOfferAmount);
+
 
 
                 }
