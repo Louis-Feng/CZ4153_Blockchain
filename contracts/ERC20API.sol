@@ -1,34 +1,24 @@
 pragma solidity >=0.4.22 <0.8.0;
+import "./IERC20.sol";
 
-contract ERC20API {
-    function allowance(address tokenOwner, address spender)
-    public
-    view
-    returns (uint256);
+contract ERC20API is IERC20 {
+    function totalSupply() external view returns (uint);
 
-    function transfer(address to, uint256 tokens) public returns (bool);
+    function balanceOf(address account) external view returns (uint);
+
+    function transfer(address recipient, uint amount) external returns (bool);
+
+    function allowance(address owner, address spender) external view returns (uint);
+
+    function approve(address spender, uint amount) external returns (bool);
 
     function transferFrom(
-        address _from,
-        address to,
-        uint256 tokens
-    ) public returns (bool);
+        address sender,
+        address recipient,
+        uint amount
+    ) external returns (bool);
 
-    function approve(
-        address _owner,
-        address _spender,
-        uint256 _value
-    ) public returns (bool success);
+    event Transfer(address indexed from, address indexed to, uint value);
 
-    function reduceAllowance(
-        address _owner,
-        address _spender,
-        uint256 _value
-    ) public returns (uint256 currentAllowance);
-
-    function balanceOf(address _owner) public view returns (uint256 balance);
-
-    function mint(address sender) external payable;
-
-    function burn(address payable sender, uint256 amt) external;
+    event Approval(address indexed owner, address indexed spender, uint value);
 }
