@@ -810,7 +810,7 @@ contract DEX {
                         // approve exchange to move token to maker
 
                         require(
-                            getTokenBalance(msg.sender, _basicToken) >= totalEtherToTrade,
+                            basicToken.balanceOf(msg.sender) >= totalEtherToTrade,
                             "executeLimitOrder: insufficient ether balance."
                         );
 
@@ -832,7 +832,7 @@ contract DEX {
                     } else {
 
                         require(
-                            getTokenBalance(currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker, _basicToken) >= totalEtherToTrade,
+                            basicToken.balanceOf(currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker) >= totalEtherToTrade,
                             "executeLimitOrder: insufficient ether balance."
                         );
 
