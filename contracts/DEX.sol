@@ -383,8 +383,8 @@ contract DEX {
         }
         OrderBook storage orderBook = token_list[_token].Book[book_name];
 //        uint256 totalOffers = 0;
-        ERC20API token = ERC20API(_token);
-        ERC20API baseToken = ERC20API(_baseToken);
+//        ERC20API token = ERC20API(_token);
+//        ERC20API baseToken = ERC20API(_baseToken);
         //This function assume this is a valid price
         // remove all offer_list for this price
         uint256 counter = orderBook.first_price;
@@ -412,9 +412,17 @@ contract DEX {
                 .offer_length
                 .sub(1);
 
-                if (
-                    orderBook.prices[_price].offer_list[counter]
-                    .higher_priority == 0
+                if (orderBook.prices[_price].highest_priority == orderBook.prices[_price].lowest_priority) {
+                   //If this is the only offer left
+                    orderBook.prices[_price].highest_priority =0;
+                    orderBook.prices[_price].lowest_priority = 0;
+                    orderBook.prices[_price].offer_length = 0;
+
+                } else if (
+//                    orderBook.prices[_price].offer_list[counter]
+//                    .higher_priority == 0
+                    counter == orderBook.prices[_price].highest_priority ||
+                    orderBook.prices[_price].offer_list[counter].higher_priority == 0
                 ) {
                     // if this offer is first in queue
                     orderBook.prices[_price]
@@ -426,9 +434,10 @@ contract DEX {
                     .lower_priority]
                     .higher_priority = 0;
                 } else if (
-                    orderBook.prices[_price].offer_list[counter]
-                    .lower_priority ==
-                    orderBook.prices[_price].lowest_priority
+//                    orderBook.prices[_price].offer_list[counter]
+//                    .lower_priority ==
+//                    orderBook.prices[_price].lowest_priority
+                        counter == orderBook.prices[_price].lowest_priority
                 ) {
                     // if this offer is the last in queue
                     orderBook.prices[_price]
@@ -505,6 +514,10 @@ contract DEX {
                 orderBook.number_of_prices = orderBook
                 .number_of_prices
                 .sub(1);
+
+                orderBook.prices[_price].highest_priority = 0;
+                orderBook.prices[_price].lowest_priority = 0;
+                orderBook.prices[_price].next_price = 0;
                 // if we are in between order book list
 //                uint256 previousPrice = orderBook.first_price;
 //                while (orderBook.prices[previousPrice].next_price != orderBook.last_price) {
@@ -734,7 +747,7 @@ contract DEX {
         return true;
     }
 
-    function getOrderBookInfo(address _token, bool is_sell) public returns (uint256, uint256, uint256) {
+    function getOrderBookInfo(address _token, bool is_sell) public view returns (string memory, uint256, uint256, uint256) {
         bytes32 book_name = "buy";
         if (is_sell) {
             book_name = "sell";
@@ -747,10 +760,10 @@ contract DEX {
         if (is_sell) {
             name = "sell";
         }
-        emit logOrderBook(name, no_prices, firstPrice, lastPrice);
-        return (no_prices, firstPrice, lastPrice);
+//        emit logOrderBook(name, no_prices, firstPrice, lastPrice);
+        return (name, no_prices, firstPrice, lastPrice);
     }
-    function getOffersInfo(address _token, bool is_sell, uint256 _price) public returns (uint256, uint256, uint256, uint256) {
+    function getOffersInfo(address _token, bool is_sell, uint256 _price) public view returns (uint256, uint256, uint256, uint256) {
         bytes32 book_name = "buy";
         if (is_sell) {
             book_name = "sell";
@@ -760,7 +773,7 @@ contract DEX {
         uint256 highest_p = offers.highest_priority;
         uint256 lowest_p = offers.lowest_priority;
         uint256 next_price = offers.next_price;
-        emit logOfferList(len, highest_p, lowest_p, next_price);
+//        emit logOfferList(len, highest_p, lowest_p, next_price);
         return (len, highest_p, lowest_p, next_price);
     }
 
