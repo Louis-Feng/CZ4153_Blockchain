@@ -45,10 +45,6 @@ contract DEX {
         uint256 number_of_prices;
     }
 
-    event OrderStored(address maker, address desiredToken, uint256 price, uint256 amount, bool isBuy);
-    event OfferPtrUpdated(uint256 offerPtr);
-    event OfferAmountLessThanTradeAmount(bool smaller);
-
     mapping(address => Token) token_list;
 
     mapping(address => uint256) ether_balance;
@@ -702,17 +698,17 @@ contract DEX {
     ) public {
 
         Token storage currentToken = token_list[_token]; // find the desired Token object.
-        ERC20API basicToken = ERC20API(_basicToken);
-        ERC20API desiredToken = ERC20API(_token);
+        IERC20 basicToken = IERC20(_basicToken);
+        IERC20 desiredToken = IERC20(_token);
 
         if (_isBuy)
         {   require(
-                getTokenBalance(msg.sender, _basicToken) >= (_price.mul(_amount)),
+                basicToken.balanceOf(msg.sender) >= (_price.mul(_amount)),
                 "executeLimitOrder: the WETH balance < ETH required."
             );
         } else {
             require(
-                getTokenBalance(msg.sender, _token) >= _amount,
+                desiredToken.balanceOf(msg.sender) >= _amount,
                 "executeLimitOrder: the token amount balance < amount required."
             );
         }
@@ -741,7 +737,6 @@ contract DEX {
 
         while (currentTradePrice != 0 && amountLeftToTrade > 0){
             if ((_isBuy && _price < currentTradePrice) || (!_isBuy && _price > currentTradePrice)) {
-
                 storeOrder(_token, !_isBuy, _price, amountLeftToTrade, msg.sender);
                 //emit OrderStored(msg.sender, _token, _price, _amount, _isBuy);
                 break;
@@ -750,16 +745,16 @@ contract DEX {
             //emit OfferPtrUpdated(offerPtr);
             while (offerPtr <= currentToken.Book[orderType].prices[currentTradePrice].lowest_priority
                 && amountLeftToTrade > 0) {
-                //emit OfferAmountLessThanTradeAmount(currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount <= amountLeftToTrade);      
+                //emit OfferAmountLessThanTradeAmount(currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount <= amountLeftToTrade);
                 if (currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount <= amountLeftToTrade){
-                     
-                    totalEtherToTrade = ((currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount).mul(currentTradePrice));
+
+                    totalEtherToTrade = (currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount).mul(currentTradePrice);
                     //this offer cannot fulfill the amount
 
                     if (_isBuy)
                     {
                         require(
-                            getTokenBalance(msg.sender, _basicToken) >= totalEtherToTrade,
+                            basicToken.balanceOf(msg.sender) >= totalEtherToTrade,
                             "executeLimitOrder: insufficient ether balance."
                         );
                         // approve exchange to move token to maker
@@ -780,7 +775,7 @@ contract DEX {
                         );
                     } else {
                         require(
-                            getTokenBalance(currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker, _basicToken) >= totalEtherToTrade,
+                            basicToken.balanceOf(currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker) >= totalEtherToTrade,
                             "executeLimitOrder: insufficient ether balance."
                         );
                         // approve exchange to move token to maker
@@ -805,10 +800,10 @@ contract DEX {
                     currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount = 0;
                     currentToken.Book[orderType].prices[currentTradePrice].offer_length = currentToken.Book[orderType].prices[currentTradePrice].offer_length.sub(1);
                     currentToken.Book[orderType].prices[currentTradePrice].highest_priority = currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].lower_priority;
-              } 
+              }
                 else {
                     //this offer can fulfill the amount
-                    totalEtherToTrade = (amountLeftToTrade.mul(currentTradePrice));
+                    totalEtherToTrade = amountLeftToTrade.mul(currentTradePrice);
 
                     if (_isBuy) {
 
@@ -896,7 +891,7 @@ contract DEX {
 
 
     function getTokenBalance(address user, address _tokenAddress) public view returns(uint256) {
-        ERC20API tokenLoaded = ERC20API(_tokenAddress);
+        IERC20 tokenLoaded = IERC20(_tokenAddress);
         return tokenLoaded.balanceOf(user);
     }
 
