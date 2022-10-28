@@ -465,7 +465,8 @@ contract DEX {
         address _baseToken,
         address _token,
         bool is_sell,
-        uint256 _price
+        uint256 _price,
+        uint256 _priority
     ) public {
         bytes32 book_name = "buy";
         if (is_sell) {
@@ -494,9 +495,9 @@ contract DEX {
         while (counter <= orderBook.prices[_price].lowest_priority && found) {
             if (
                 orderBook.prices[_price].offer_list[counter].offer_maker ==
-                msg.sender
+                msg.sender && counter == _priority
+
             ) {
-//                totalOffers = totalOffers.add(1);
 
                 orderBook.prices[_price].offer_length = orderBook.prices[_price]
                 .offer_length
@@ -698,6 +699,74 @@ contract DEX {
         }
 
         return (ordersPrices, ordersVolumes);
+    }
+
+    function getUserOrders(address _token, bool is_sell)
+    public
+    view
+    returns (uint256[] memory, uint256[] memory, uint256[] memory)
+    {
+        bytes32 book_name = "buy";
+        if (is_sell) {
+            book_name = "sell";
+        }
+        OrderBook storage orderBook = token_list[_token].Book[book_name];
+
+        uint256 currentPrice = orderBook.first_price;
+        uint256 no_total_offer = 0;
+        //loop the orderBook and increase no_total_offer
+        if (orderBook.first_price > 0) {
+            while (!is_sell && currentPrice <= orderBook.first_price ||
+            is_sell && currentPrice >= orderBook.first_price) {
+                no_total_offer += orderBook.prices[currentPrice].offer_length;
+
+                if (currentPrice == orderBook.prices[currentPrice].next_price) {
+                    break;
+                } else {
+                    currentPrice = orderBook.prices[currentPrice].next_price;
+                }
+            }
+        }
+
+        uint256[] memory ordersPrices = new uint256[](no_total_offer);
+        uint256[] memory ordersVolumes = new uint256[](no_total_offer);
+        uint256[] memory ordersPriorities = new uint256[](no_total_offer);
+
+        currentPrice = orderBook.first_price;
+        uint256 counter = 0;
+
+        if (orderBook.first_price > 0) {
+            while (!is_sell && currentPrice <= orderBook.first_price ||
+            is_sell && currentPrice >= orderBook.first_price) {
+                // uint256 priceVolume = 0;
+                uint256 offerPointer = orderBook.prices[currentPrice].highest_priority;
+
+                while (
+                    offerPointer <= orderBook.prices[currentPrice].lowest_priority
+                ) {
+                    if (msg.sender == orderBook.prices[currentPrice].offer_list[offerPointer].offer_maker) {
+                        ordersPrices[counter] = currentPrice;
+                        ordersVolumes[counter] = orderBook.prices[currentPrice].offer_list[offerPointer].offer_amount;
+                        ordersPriorities[counter] = offerPointer;
+                    }
+
+                    counter = counter.add(1);
+                    if (offerPointer == orderBook.prices[currentPrice].offer_list[offerPointer].lower_priority){
+                        break;
+                    } else {
+                        offerPointer = orderBook.prices[currentPrice].offer_list[offerPointer].lower_priority;
+                    }
+                }
+
+                if (currentPrice == orderBook.prices[currentPrice].next_price) {
+                    break;
+                } else {
+                    currentPrice = orderBook.prices[currentPrice].next_price;
+                }
+            }
+        }
+
+        return (ordersPrices, ordersVolumes, ordersPriorities);
     }
 
     function executeLimitOrder (
