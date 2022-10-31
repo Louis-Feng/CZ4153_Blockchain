@@ -1,0 +1,421 @@
+Index: dex-frontend/src/App.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>// import logo from './logo.svg';\nimport './App.css';\nimport React, {Component} from \"react\";\n// import React from \"react\"\nimport Web3 from \"web3\";\nimport BasicTokenJS from \"./contracts/BasicToken.json\";\nimport TokenAJS from \"./contracts/TokenA.json\";\nimport TokenBJS from \"./contracts/TokenB.json\";\nimport TokenCJS from \"./contracts/TokenC.json\";\nimport DexJS from \"./contracts/DEX.json\";\nimport UserAccountInfo from \"./UserAccountInfo\";\nimport AllUserOffers from \"./AllUserOffers\"\n\n// import BasicTokenJS from \"../../build/contracts/BasicToken.json\";\n// import { ethers } from 'ethers';\n// import { parseEther, formatEther } from '@ethersproject/units';\n\n\nclass App extends Component{\n\n  constructor(props) {\n    super(props);\n    this.state = {\n      web3Provider: null,\n      userAddress: \"0x0\",\n      token: {},\n      tokensToTrade: {\n        tokenA: {},\n      },\n      dex: {},\n      is_loading : true,\n\n    }\n  }\n\n  componentDidMount() {\n    this.initiateWeb3();\n    // this.loadUserAddress();\n  }\n\n  componentDidUpdate(prevProps, prevState) {\n    if (prevState.web3Provider !== this.state.web3Provider ){\n      this.loadUserAddress();\n    }\n    if (prevState.userAddress !== this.state.userAddress ){\n      this.loadContracts();\n    }\n      \n  }\n\n  async initiateWeb3() {\n    // const provider = new ethers.providers.Web3Provider(window.ethereum);\n    // const signer = provider.getSigner();\n    var web3 = null;\n    console.log(\"web3\")\n    console.log(this.state.web3Provider)\n\n    if (window.ethereum) {\n      if (window.ethereum) {\n        // this.setState({web3Provider: window.ethereum})\n        web3 = new Web3(window.ethereum);\n        // Request account access\n        try{\n          await window.ethereum.request({ method: 'eth_requestAccounts' });\n          window.ethereum.on(\"accountsChanged\", function () {\n          window.ethereum.request({ method: 'eth_requestAccounts' }, function (error, accounts) {\n            window.location.reload();\n          });\n        });\n        }catch (error) {\n          // User denied account access...\n          console.error(\"User denied account access\")\n        }\n      // Legacy dapp browsers...\n      } else if (window.web3) {\n        web3 = new Web3(window.web3.currentProvider);\n        // this.setState({web3Provider: window.web3.currentProvider});\n      } else {\n        window.alert(\n          \"Non-Ethereum browser detected. You should consider trying MetaMask!\"\n        );\n        // If no injected web3 instance is detected, fall back to Ganache\n        // window.web3 = new Web3.providers.HttpProvider('http://localhost:7545');\n        let provider = new Web3.providers.HttpProvider('http://localhost:7545');\n        web3 = new Web3(provider);\n      }\n    }\n    // const web3 = new Web3(this.state.web3Provider);\n    this.setState({web3Provider: web3});\n  }\n\n  async loadUserAddress() {\n    console.log(\"Address\")\n\n    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });\n    // const accounts = await web3.eth.getAccounts();\n    this.setState({ userAddress: accounts[0] });\n  }\n\n  async loadContracts() {\n    console.log(\"contract\")\n\n\n    // const accounts = await web3.eth.getAccounts();\n    // this.setState({ userAddress: accounts[0] });\n    // setTimeout(() => {\n    //   console.log(this.state.userAddress);\n    // }, 1\n    // );\n    console.log(this.state.web3Provider);\n    const web3 = this.state.web3Provider;\n    const networkId = await web3.eth.net.getId();\n    const BasicTokenAddress = BasicTokenJS.networks[networkId].address;\n    const TokenAAddress = TokenAJS.networks[networkId].address;\n    const TokenBAddress = TokenBJS.networks[networkId].address;\n    const TokenCAddress = TokenCJS.networks[networkId].address;\n    const DexAddress = DexJS.networks[networkId].address;\n    const token = new web3.eth.Contract(BasicTokenJS.abi, BasicTokenAddress);\n    const tokenA = new web3.eth.Contract(TokenAJS.abi, TokenAAddress);\n    const tokenB = new web3.eth.Contract(TokenBJS.abi, TokenBAddress);\n    const tokenC = new web3.eth.Contract(TokenCJS.abi, TokenCAddress);\n    const dex = new web3.eth.Contract(DexJS.abi, DexAddress);\n\n    this.setState({ token, dex });\n    this.setState((prevState) =>({\n      tokensToTrade: {\n      ...prevState.userWallet,\n      tokenA,\n      tokenB,\n      tokenC\n      }\n    }))\n    this.setState({is_loading: false});\n       \n    // const tokenBalance = await token.methods.balanceOf(this.state.userAddress).call()\n    // const tokenABalance = await tokenA.methods.balanceOf(this.state.userAddress).call()\n    // console.log(tokenBalance)\n    // console.log(tokenABalance)\n    // await this.getBalance()\n  }\n\n  \n\n  render() {\n    let content;\n    if (this.state.is_loading) {\n      content = (\n        <p id=\"loader\" className=\"text-center\">\n          Loading...\n        </p>\n      );\n    } else {\n      content = (\n        <div>\n        <UserAccountInfo\n          userAddress={this.state.userAddress} token={this.state.token} tokensToTrade={this.state.tokensToTrade} dex={this.state.dex} web3 = {this.state.web3Provider}\n        />\n        <AllUserOffers\n          userAddress={this.state.userAddress} token={this.state.token} tokensToTrade={this.state.tokensToTrade} dex={this.state.dex} web3 = {this.state.web3Provider}\n        />\n        \n         {/* <UserOffers userAddress={this.state.userAddress} token={this.state.token} tokenToTrade={this.state.tokensToTrade.tokenA} dex={this.state.dex} is_sell = {true}/>\n         <UserOffers userAddress={this.state.userAddress} token={this.state.token} tokenToTrade={this.state.tokensToTrade.tokenA} dex={this.state.dex} is_sell = {false}/> */}\n        </div>\n        \n      );\n    }\n    return (\n      <div className=\"App\">\n      <header className=\"App-header\">\n      <p>\n          Edit <code>src/App.js</code> and save to reload.\n        </p>\n        {content}\n        {/* {this.renderUserOrders()} */}\n        \n      </header>\n    </div>\n    );\n  }\n}\n\nexport default App;\n\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/dex-frontend/src/App.js b/dex-frontend/src/App.js
+--- a/dex-frontend/src/App.js	(revision 752e49f594a52f9114b26791df6975a908e7baa1)
++++ b/dex-frontend/src/App.js	(date 1667218367208)
+@@ -5,11 +5,8 @@
+ import Web3 from "web3";
+ import BasicTokenJS from "./contracts/BasicToken.json";
+ import TokenAJS from "./contracts/TokenA.json";
+-import TokenBJS from "./contracts/TokenB.json";
+-import TokenCJS from "./contracts/TokenC.json";
+ import DexJS from "./contracts/DEX.json";
+-import UserAccountInfo from "./UserAccountInfo";
+-import AllUserOffers from "./AllUserOffers"
++import Main from "./Main";
+ 
+ // import BasicTokenJS from "../../build/contracts/BasicToken.json";
+ // import { ethers } from 'ethers';
+@@ -24,9 +21,7 @@
+       web3Provider: null,
+       userAddress: "0x0",
+       token: {},
+-      tokensToTrade: {
+-        tokenA: {},
+-      },
++      tokenA: {},
+       dex: {},
+       is_loading : true,
+ 
+@@ -112,24 +107,12 @@
+     const networkId = await web3.eth.net.getId();
+     const BasicTokenAddress = BasicTokenJS.networks[networkId].address;
+     const TokenAAddress = TokenAJS.networks[networkId].address;
+-    const TokenBAddress = TokenBJS.networks[networkId].address;
+-    const TokenCAddress = TokenCJS.networks[networkId].address;
+     const DexAddress = DexJS.networks[networkId].address;
+     const token = new web3.eth.Contract(BasicTokenJS.abi, BasicTokenAddress);
+     const tokenA = new web3.eth.Contract(TokenAJS.abi, TokenAAddress);
+-    const tokenB = new web3.eth.Contract(TokenBJS.abi, TokenBAddress);
+-    const tokenC = new web3.eth.Contract(TokenCJS.abi, TokenCAddress);
+     const dex = new web3.eth.Contract(DexJS.abi, DexAddress);
+ 
+-    this.setState({ token, dex });
+-    this.setState((prevState) =>({
+-      tokensToTrade: {
+-      ...prevState.userWallet,
+-      tokenA,
+-      tokenB,
+-      tokenC
+-      }
+-    }))
++    this.setState({ token, tokenA, dex });
+     this.setState({is_loading: false});
+        
+     // const tokenBalance = await token.methods.balanceOf(this.state.userAddress).call()
+@@ -139,8 +122,6 @@
+     // await this.getBalance()
+   }
+ 
+-  
+-
+   render() {
+     let content;
+     if (this.state.is_loading) {
+@@ -151,18 +132,9 @@
+       );
+     } else {
+       content = (
+-        <div>
+-        <UserAccountInfo
+-          userAddress={this.state.userAddress} token={this.state.token} tokensToTrade={this.state.tokensToTrade} dex={this.state.dex} web3 = {this.state.web3Provider}
++        <Main
++          userAddress={this.state.userAddress} token={this.state.token} tokenA={this.state.tokenA} dex={this.state.dex} web3 = {this.state.web3Provider}
+         />
+-        <AllUserOffers
+-          userAddress={this.state.userAddress} token={this.state.token} tokensToTrade={this.state.tokensToTrade} dex={this.state.dex} web3 = {this.state.web3Provider}
+-        />
+-        
+-         {/* <UserOffers userAddress={this.state.userAddress} token={this.state.token} tokenToTrade={this.state.tokensToTrade.tokenA} dex={this.state.dex} is_sell = {true}/>
+-         <UserOffers userAddress={this.state.userAddress} token={this.state.token} tokenToTrade={this.state.tokensToTrade.tokenA} dex={this.state.dex} is_sell = {false}/> */}
+-        </div>
+-        
+       );
+     }
+     return (
+@@ -172,7 +144,6 @@
+           Edit <code>src/App.js</code> and save to reload.
+         </p>
+         {content}
+-        {/* {this.renderUserOrders()} */}
+         
+       </header>
+     </div>
+Index: dex-frontend/src/index.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport './index.css';\nimport App from './App';\nimport reportWebVitals from './reportWebVitals';\n\nconst root = ReactDOM.createRoot(document.getElementById('root'));\nroot.render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n\n// If you want to start measuring performance in your app, pass a function\n// to log results (for example: reportWebVitals(console.log))\n// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals\nreportWebVitals();\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/dex-frontend/src/index.js b/dex-frontend/src/index.js
+--- a/dex-frontend/src/index.js	(revision 752e49f594a52f9114b26791df6975a908e7baa1)
++++ b/dex-frontend/src/index.js	(date 1667217285622)
+@@ -1,10 +1,11 @@
+-import React from 'react';
+-import ReactDOM from 'react-dom/client';
+-import './index.css';
+-import App from './App';
+-import reportWebVitals from './reportWebVitals';
++import React from "react";
++import ReactDOM from "react-dom/client";
++import "./index.css";
++import App from "./App";
++import reportWebVitals from "./reportWebVitals";
++//import TradeWindow from "./tradeWindow";
+ 
+-const root = ReactDOM.createRoot(document.getElementById('root'));
++const root = ReactDOM.createRoot(document.getElementById("root"));
+ root.render(
+   <React.StrictMode>
+     <App />
+Index: dex-frontend/src/UserAccountInfo.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import logo from './logo.svg';\nimport './App.css';\nimport React, {Component} from \"react\";\n\n\nclass UserAccountInfo extends Component{\n\n  constructor(props) {\n    super(props);\n    this.state = {\n      userWallet: {\n        token_balance: 0,\n        eth_balance: 0\n      },\n      is_loading: true\n    }\n  }\n\n  componentDidMount() {\n    this.getBalances();\n    // this.loadUserAddress();\n  }\n  async getBalances() {\n    if (this.props.token) {\n        let token_balance = await this.props.token.methods\n          .balanceOf(this.props.userAddress)\n          .call();\n        this.setState((prevState) => ({\n          userWallet: {\n            ...prevState.userWallet,\n            token_balance: token_balance,\n          },\n        }));\n        console.log(\"token balence\")\n        console.log(this.state.userWallet.token_balance)\n      } else {\n        window.alert(\"BasicToken contract not deployed to detected network\");\n      }\n      for (const [key, tradingToken] of Object.entries(this.props.tokensToTrade)){\n        // var tokenName = key ;\n        if (tradingToken) {\n          let tradingToken_balance = await tradingToken.methods\n            .balanceOf(this.props.userAddress)\n            .call();\n          // var tradingTokenBalance = {}\n          // tradingTokenBalance[key] = tradingToken_balance\n          this.setState((prevState) => ({\n            userWallet: {\n              ...prevState.userWallet,\n              [key]: tradingToken_balance\n              // ${tokenName}: tradingToken_balance,\n            },\n          }));\n          console.log(\"tokenA balence\")\n          console.log(this.state.userWallet)\n        } else {\n          window.alert(\"TokenA contract not deployed to detected network\");\n        }\n        \n      }\n\n      // if (this.props.tokenA) {\n      //   let tokenA_balance = await this.props.tokenA.methods\n      //     .balanceOf(this.props.userAddress)\n      //     .call();\n      //   this.setState((prevState) => ({\n      //     userWallet: {\n      //       ...prevState.userWallet,\n      //       tokenA_balance: tokenA_balance,\n      //     },\n      //   }));\n      //   console.log(\"tokenA balence\")\n      //   console.log(this.state.userWallet.tokenA_balance)\n      // } else {\n      //   window.alert(\"TokenA contract not deployed to detected network\");\n      // }\n\n      if (this.props.dex) {\n        let web3 = this.props.web3;\n        let eth_balance = await web3.eth.getBalance(this.props.userAddress);\n        this.setState((prevState) => ({\n          userWallet: {\n            ...prevState.userWallet,\n            eth_balance: eth_balance,\n          },\n        }));\n        console.log(\"eth balence\")\n        console.log(this.state.userWallet.eth_balance)\n      } else {\n        window.alert(\"dex contract not deployed to detected network\");\n      }\n      this.setState({is_loading: false})\n  }\n\n//   componentDidUpdate(prevProps, prevState) {\n//     if (prevState.web3Provider !== this.state.web3Provider ){\n//       this.loadUserAddress();\n//     }\n//     if (prevState.userAddress !== this.state.userAddress ){\n//       this.loadContracts();\n//     }\n      \n//   }\n\n\n\n\n  render() {\n    let content;\n    if (this.state.is_loading) {\n      content = (\n        <p id=\"loader\" className=\"text-center\">\n          Loading...\n        </p>\n      );\n    } else {\n      content = (\n        <div>\n      \n        <img src={logo} className=\"App-logo\" alt=\"logo\" />\n        <p>\n          Edit <code>src/App.js</code> and save to reload. {this.state.userWallet.eth_balance}\n        </p>\n        <a\n          className=\"App-link\"\n          href=\"https://reactjs.org\"\n          target=\"_blank\"\n          rel=\"noopener noreferrer\"\n        >\n          Learn React\n        </a>\n    </div>\n      );\n    }\n    return (\n    <div className=\"UserAccountInfo\">\n      {content}\n    </div>\n    );\n  }\n}\n\nexport default UserAccountInfo;
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/dex-frontend/src/UserAccountInfo.js b/dex-frontend/src/UserAccountInfo.js
+--- a/dex-frontend/src/UserAccountInfo.js	(revision 752e49f594a52f9114b26791df6975a908e7baa1)
++++ b/dex-frontend/src/UserAccountInfo.js	(date 1667218698464)
+@@ -1,19 +1,17 @@
+-import logo from './logo.svg';
+-import './App.css';
+-import React, {Component} from "react";
++import logo from "./logo.svg";
++import "./App.css";
++import React, { Component } from "react";
+ 
+-
+-class UserAccountInfo extends Component{
+-
++class UserAccountInfo extends Component {
+   constructor(props) {
+     super(props);
+     this.state = {
+       userWallet: {
+         token_balance: 0,
+-        eth_balance: 0
++        eth_balance: 0,
+       },
+-      is_loading: true
+-    }
++      is_loading: true,
++    };
+   }
+ 
+   componentDidMount() {
+@@ -22,89 +20,87 @@
+   }
+   async getBalances() {
+     if (this.props.token) {
+-        let token_balance = await this.props.token.methods
+-          .balanceOf(this.props.userAddress)
+-          .call();
+-        this.setState((prevState) => ({
+-          userWallet: {
+-            ...prevState.userWallet,
+-            token_balance: token_balance,
+-          },
+-        }));
+-        console.log("token balence")
+-        console.log(this.state.userWallet.token_balance)
+-      } else {
+-        window.alert("BasicToken contract not deployed to detected network");
+-      }
+-      for (const [key, tradingToken] of Object.entries(this.props.tokensToTrade)){
+-        // var tokenName = key ;
+-        if (tradingToken) {
+-          let tradingToken_balance = await tradingToken.methods
+-            .balanceOf(this.props.userAddress)
+-            .call();
+-          // var tradingTokenBalance = {}
+-          // tradingTokenBalance[key] = tradingToken_balance
+-          this.setState((prevState) => ({
+-            userWallet: {
+-              ...prevState.userWallet,
+-              [key]: tradingToken_balance
+-              // ${tokenName}: tradingToken_balance,
+-            },
+-          }));
+-          console.log("tokenA balence")
+-          console.log(this.state.userWallet)
+-        } else {
+-          window.alert("TokenA contract not deployed to detected network");
+-        }
+-        
+-      }
++      let token_balance = await this.props.token.methods
++        .balanceOf(this.props.userAddress)
++        .call();
++      this.setState((prevState) => ({
++        userWallet: {
++          ...prevState.userWallet,
++          token_balance: token_balance,
++        },
++      }));
++      console.log("token balence");
++      console.log(this.state.userWallet.token_balance);
++    } else {
++      window.alert("BasicToken contract not deployed to detected network");
++    }
++    for (const [key, tradingToken] of Object.entries(
++      this.props.tokensToTrade
++    )) {
++      // var tokenName = key ;
++      if (tradingToken) {
++        let tradingToken_balance = await tradingToken.methods
++          .balanceOf(this.props.userAddress)
++          .call();
++        // var tradingTokenBalance = {}
++        // tradingTokenBalance[key] = tradingToken_balance
++        this.setState((prevState) => ({
++          userWallet: {
++            ...prevState.userWallet,
++            [key]: tradingToken_balance,
++            // ${tokenName}: tradingToken_balance,
++          },
++        }));
++        console.log("tokenA balence");
++        console.log(this.state.userWallet);
++      } else {
++        window.alert("TokenA contract not deployed to detected network");
++      }
++    }
+ 
+-      // if (this.props.tokenA) {
+-      //   let tokenA_balance = await this.props.tokenA.methods
+-      //     .balanceOf(this.props.userAddress)
+-      //     .call();
+-      //   this.setState((prevState) => ({
+-      //     userWallet: {
+-      //       ...prevState.userWallet,
+-      //       tokenA_balance: tokenA_balance,
+-      //     },
+-      //   }));
+-      //   console.log("tokenA balence")
+-      //   console.log(this.state.userWallet.tokenA_balance)
+-      // } else {
+-      //   window.alert("TokenA contract not deployed to detected network");
+-      // }
++    // if (this.props.tokenA) {
++    //   let tokenA_balance = await this.props.tokenA.methods
++    //     .balanceOf(this.props.userAddress)
++    //     .call();
++    //   this.setState((prevState) => ({
++    //     userWallet: {
++    //       ...prevState.userWallet,
++    //       tokenA_balance: tokenA_balance,
++    //     },
++    //   }));
++    //   console.log("tokenA balence")
++    //   console.log(this.state.userWallet.tokenA_balance)
++    // } else {
++    //   window.alert("TokenA contract not deployed to detected network");
++    // }
+ 
+-      if (this.props.dex) {
+-        let web3 = this.props.web3;
+-        let eth_balance = await web3.eth.getBalance(this.props.userAddress);
+-        this.setState((prevState) => ({
+-          userWallet: {
+-            ...prevState.userWallet,
+-            eth_balance: eth_balance,
+-          },
+-        }));
+-        console.log("eth balence")
+-        console.log(this.state.userWallet.eth_balance)
+-      } else {
+-        window.alert("dex contract not deployed to detected network");
+-      }
+-      this.setState({is_loading: false})
++    if (this.props.dex) {
++      let web3 = this.props.web3;
++      let eth_balance = await web3.eth.getBalance(this.props.userAddress);
++      this.setState((prevState) => ({
++        userWallet: {
++          ...prevState.userWallet,
++          eth_balance: eth_balance,
++        },
++      }));
++      console.log("eth balence");
++      console.log(this.state.userWallet.eth_balance);
++    } else {
++      window.alert("dex contract not deployed to detected network");
++    }
++    this.setState({ is_loading: false });
+   }
+ 
+-//   componentDidUpdate(prevProps, prevState) {
+-//     if (prevState.web3Provider !== this.state.web3Provider ){
+-//       this.loadUserAddress();
+-//     }
+-//     if (prevState.userAddress !== this.state.userAddress ){
+-//       this.loadContracts();
+-//     }
+-      
+-//   }
++  //   componentDidUpdate(prevProps, prevState) {
++  //     if (prevState.web3Provider !== this.state.web3Provider ){
++  //       this.loadUserAddress();
++  //     }
++  //     if (prevState.userAddress !== this.state.userAddress ){
++  //       this.loadContracts();
++  //     }
++
++  //   }
+ 
+-
+-
+-
+   render() {
+     let content;
+     if (this.state.is_loading) {
+@@ -116,28 +112,19 @@
+     } else {
+       content = (
+         <div>
+-      
+-        <img src={logo} className="App-logo" alt="logo" />
+-        <p>
+-          Edit <code>src/App.js</code> and save to reload. {this.state.userWallet.eth_balance}
+-        </p>
+-        <a
+-          className="App-link"
+-          href="https://reactjs.org"
+-          target="_blank"
+-          rel="noopener noreferrer"
+-        >
+-          Learn React
+-        </a>
+-    </div>
++          <a
++            className="App-link"
++            href="https://reactjs.org"
++            target="_blank"
++            rel="noopener noreferrer"
++          >
++            Learn React
++          </a>
++        </div>
+       );
+     }
+-    return (
+-    <div className="UserAccountInfo">
+-      {content}
+-    </div>
+-    );
++    return <div className="UserAccountInfo">{content}</div>;
+   }
+ }
+ 
+-export default UserAccountInfo;
+\ No newline at end of file
++export default UserAccountInfo;
+Index: dex-frontend/src/AllUserOffers.js
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>// import logo from './logo.svg';\nimport \"./App.css\";\nimport React, { Component } from \"react\";\nimport UserOffers from \"./UserOffers\";\n\nclass UserAccountInfo extends Component {\n  constructor(props) {\n    super(props);\n    // this.state = {\n    //   userWallet: {\n    //     token_balance: 0,\n    //     eth_balance: 0\n    //   }\n    // }\n  }\n\n  //   componentDidMount() {\n  //     this.getBalances();\n  //     // this.loadUserAddress();\n  //   }\n  renderUserOrders() {\n    // const web3 = window.web3;\n    // let orderBookPrices = this.state.order[0];\n    // let orderBookAmount = this.state.order[1];\n    console.log(\"user order\");\n    if (Object.keys(this.props.tokensToTrade).length === 0) {\n      console.log(\"no token\");\n      return <p>There is no token in the system besides Basic Token </p>;\n    } else {\n      return Object.keys(this.props.tokensToTrade).map((key) => {\n        // const price = web3.utils.fromWei(s, \"Ether\");\n        // const amount = web3.utils.fromWei(orderBookAmount[index], \"Ether\");\n        return (\n          <div>\n            <p>{key}</p>\n            <UserOffers\n              userAddress={this.props.userAddress}\n              token={this.props.token}\n              tokenToTrade={this.props.tokensToTrade[key]}\n              dex={this.props.dex}\n              tokenName={key}\n              is_sell={true}\n            />\n            <UserOffers\n              userAddress={this.props.userAddress}\n              token={this.props.token}\n              tokenToTrade={this.props.tokensToTrade[key]}\n              dex={this.props.dex}\n              tokenName={key}\n              is_sell={false}\n            />\n          </div>\n        );\n      });\n    }\n  }\n\n  render() {\n    // let content;\n    // if (this.state.is_loading) {\n    //   content = (\n    //     <p id=\"loader\" className=\"text-center\">\n    //       Loading...\n    //     </p>\n    //   );\n    // } else {\n    //   content = (\n    //     <div>\n    //         {this.renderUserOrders()}\n    //     </div>\n    //   );\n    // }\n    return <div className=\"AllUserOffers\">{this.renderUserOrders()}</div>;\n  }\n}\n\nexport default UserAccountInfo;\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/dex-frontend/src/AllUserOffers.js b/dex-frontend/src/AllUserOffers.js
+--- a/dex-frontend/src/AllUserOffers.js	(revision 752e49f594a52f9114b26791df6975a908e7baa1)
++++ b/dex-frontend/src/AllUserOffers.js	(date 1667218469914)
+@@ -33,22 +33,24 @@
+         return (
+           <div>
+             <p>{key}</p>
+-            <UserOffers
+-              userAddress={this.props.userAddress}
+-              token={this.props.token}
+-              tokenToTrade={this.props.tokensToTrade[key]}
+-              dex={this.props.dex}
+-              tokenName={key}
+-              is_sell={true}
+-            />
+-            <UserOffers
+-              userAddress={this.props.userAddress}
+-              token={this.props.token}
+-              tokenToTrade={this.props.tokensToTrade[key]}
+-              dex={this.props.dex}
+-              tokenName={key}
+-              is_sell={false}
+-            />
++            <div style={{ display: "flex", flexDirection: "row" }}>
++              <UserOffers
++                userAddress={this.props.userAddress}
++                token={this.props.token}
++                tokenToTrade={this.props.tokensToTrade[key]}
++                dex={this.props.dex}
++                tokenName={key}
++                is_sell={true}
++              />
++              <UserOffers
++                userAddress={this.props.userAddress}
++                token={this.props.token}
++                tokenToTrade={this.props.tokensToTrade[key]}
++                dex={this.props.dex}
++                tokenName={key}
++                is_sell={false}
++              />
++            </div>
+           </div>
+         );
+       });
