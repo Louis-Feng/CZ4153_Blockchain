@@ -27,22 +27,24 @@ class AllUserOffers extends Component{
         return (
           <div>
             <p>{key}</p>
-            <UserOffers
-              userAddress={this.props.userAddress}
-              token={this.props.token}
-              tokenToTrade={this.props.tokensToTrade[key]}
-              dex={this.props.dex}
-              tokenName={key}
-              is_sell={true}
-            />
-            <UserOffers
-              userAddress={this.props.userAddress}
-              token={this.props.token}
-              tokenToTrade={this.props.tokensToTrade[key]}
-              dex={this.props.dex}
-              tokenName={key}
-              is_sell={false}
-            />
+            <div style={{ display: "flex", flexDirection: "row" }}>
+              <UserOffers
+                userAddress={this.props.userAddress}
+                token={this.props.token}
+                tokenToTrade={this.props.tokensToTrade[key]}
+                dex={this.props.dex}
+                tokenName={key}
+                is_sell={true}
+              />
+              <UserOffers
+                userAddress={this.props.userAddress}
+                token={this.props.token}
+                tokenToTrade={this.props.tokensToTrade[key]}
+                dex={this.props.dex}
+                tokenName={key}
+                is_sell={false}
+              />
+            </div>
           </div>
         );
       });
