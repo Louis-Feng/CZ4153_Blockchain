@@ -3,21 +3,15 @@ import "./App.css";
 import React, { Component } from "react";
 import UserOffers from "./UserOffers";
 
-class UserAccountInfo extends Component {
+
+
+class AllUserOffers extends Component{
+
+
   constructor(props) {
     super(props);
-    // this.state = {
-    //   userWallet: {
-    //     token_balance: 0,
-    //     eth_balance: 0
-    //   }
-    // }
   }
 
-  //   componentDidMount() {
-  //     this.getBalances();
-  //     // this.loadUserAddress();
-  //   }
   renderUserOrders() {
     // const web3 = window.web3;
     // let orderBookPrices = this.state.order[0];
@@ -33,22 +27,24 @@ class UserAccountInfo extends Component {
         return (
           <div>
             <p>{key}</p>
-            <UserOffers
-              userAddress={this.props.userAddress}
-              token={this.props.token}
-              tokenToTrade={this.props.tokensToTrade[key]}
-              dex={this.props.dex}
-              tokenName={key}
-              is_sell={true}
-            />
-            <UserOffers
-              userAddress={this.props.userAddress}
-              token={this.props.token}
-              tokenToTrade={this.props.tokensToTrade[key]}
-              dex={this.props.dex}
-              tokenName={key}
-              is_sell={false}
-            />
+            <div style={{ display: "flex", flexDirection: "row" }}>
+              <UserOffers
+                userAddress={this.props.userAddress}
+                token={this.props.token}
+                tokenToTrade={this.props.tokensToTrade[key]}
+                dex={this.props.dex}
+                tokenName={key}
+                is_sell={true}
+              />
+              <UserOffers
+                userAddress={this.props.userAddress}
+                token={this.props.token}
+                tokenToTrade={this.props.tokensToTrade[key]}
+                dex={this.props.dex}
+                tokenName={key}
+                is_sell={false}
+              />
+            </div>
           </div>
         );
       });
@@ -74,4 +70,6 @@ class UserAccountInfo extends Component {
   }
 }
 
-export default UserAccountInfo;
+
+export default AllUserOffers;
+

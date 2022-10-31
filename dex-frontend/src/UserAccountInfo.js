@@ -1,8 +1,10 @@
 import logo from "./logo.svg";
 import "./App.css";
 import React, { Component } from "react";
+
 import "bootstrap/dist/css/bootstrap.css";
 import Badge from "./components/tokenbadge";
+
 
 class UserAccountInfo extends Component {
   constructor(props) {
@@ -13,6 +15,7 @@ class UserAccountInfo extends Component {
         eth_balance: 0,
       },
       is_loading: true,
+
       tokenAndBalance: [
         { token: "", balance: 0 },
         { token: "", balance: 0 },
@@ -98,6 +101,7 @@ class UserAccountInfo extends Component {
       window.alert("dex contract not deployed to detected network");
     }
     this.setState({ is_loading: false });
+
   }
 
   //   componentDidUpdate(prevProps, prevState) {
@@ -164,7 +168,7 @@ class UserAccountInfo extends Component {
       width: "40vh",
       height: "40vh",
     };
-
+    
     let content;
     if (this.state.is_loading) {
       content = (
@@ -174,6 +178,7 @@ class UserAccountInfo extends Component {
       );
     } else {
       content = (
+
         <React.Fragment>
           <div className="d-flex flex-column" style={containerStyle}>
             <div
@@ -254,6 +259,7 @@ class UserAccountInfo extends Component {
             </div>
           </div>
         </React.Fragment>
+
       );
     }
     return <div className="UserAccountInfo">{content}</div>;

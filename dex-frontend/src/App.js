@@ -9,7 +9,11 @@ import TokenBJS from "./contracts/TokenB.json";
 import TokenCJS from "./contracts/TokenC.json";
 import DexJS from "./contracts/DEX.json";
 import UserAccountInfo from "./UserAccountInfo";
-import AllUserOffers from "./AllUserOffers";
+
+import AllUserOffers from "./AllUserOffers"
+import AllGlobalOffers from './AllGlobalOffers';
+import {Link} from "react-router-dom";
+
 
 // import BasicTokenJS from "../../build/contracts/BasicToken.json";
 // import { ethers } from 'ethers';
@@ -172,6 +176,14 @@ class App extends Component {
     }
     return (
       <div className="App">
+      <header className="App-header">
+      <p>
+          Edit <code>src/App.js</code> and save to reload.
+        </p>
+      {/* <h1>This is the home page</h1> */}
+      <Link to="/">Click to view our about page</Link>
+      {/* <Link to="contact">Click to view our contact page</Link> */}
+
         {content}
         {/* {this.renderUserOrders()} */}
       </div>

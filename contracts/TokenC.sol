@@ -31,6 +31,10 @@ contract TokenC is IERC20 {
     function balanceOf(address tokenOwner) public view returns (uint) {
         return balances[tokenOwner];
     }
+    function getNumToken(address tokenOwner) public view returns (uint256) {
+        uint256 numTokens = balances[tokenOwner].div(10 ** uint256(this.decimals()));
+        return numTokens;
+    }
 
     function transfer(address receiver, uint numTokens) public returns (bool) {
         uint256 value = numTokens.mul(10 ** uint256(this.decimals()));
