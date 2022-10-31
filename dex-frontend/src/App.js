@@ -6,7 +6,8 @@ import Web3 from "web3";
 import BasicTokenJS from "./contracts/BasicToken.json";
 import TokenAJS from "./contracts/TokenA.json";
 import DexJS from "./contracts/DEX.json";
-import Main from "./Main";
+import UserAccountInfo from "./UserAccountInfo";
+import UserOffers from "./UserOffers";
 
 // import BasicTokenJS from "../../build/contracts/BasicToken.json";
 // import { ethers } from 'ethers';
@@ -132,9 +133,13 @@ class App extends Component{
       );
     } else {
       content = (
-        <Main
+        <div>
+          <UserAccountInfo
           userAddress={this.state.userAddress} token={this.state.token} tokenA={this.state.tokenA} dex={this.state.dex} web3 = {this.state.web3Provider}
         />
+        {/* <UserOffers/> */}
+        </div>
+        
       );
     }
     return (
