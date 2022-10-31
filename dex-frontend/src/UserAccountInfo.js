@@ -3,7 +3,7 @@ import './App.css';
 import React, {Component} from "react";
 
 
-class Main extends Component{
+class UserAccountInfo extends Component{
 
   constructor(props) {
     super(props);
@@ -12,7 +12,8 @@ class Main extends Component{
         token_balance: 0,
         tokenA_balance: 0,
         eth_balance: 0
-      }
+      },
+      is_loading: true
     }
   }
 
@@ -67,6 +68,7 @@ class Main extends Component{
       } else {
         window.alert("dex contract not deployed to detected network");
       }
+      this.setState({is_loading: false})
   }
 
 //   componentDidUpdate(prevProps, prevState) {
@@ -83,12 +85,20 @@ class Main extends Component{
 
 
   render() {
-    return (
-      <div className="Main">
+    let content;
+    if (this.state.is_loading) {
+      content = (
+        <p id="loader" className="text-center">
+          Loading...
+        </p>
+      );
+    } else {
+      content = (
+        <div>
       
         <img src={logo} className="App-logo" alt="logo" />
         <p>
-          Edit <code>src/App.js</code> and save to reload. {this.props.userAddress}
+          Edit <code>src/App.js</code> and save to reload. {this.state.userWallet.eth_balance}
         </p>
         <a
           className="App-link"
@@ -98,10 +108,15 @@ class Main extends Component{
         >
           Learn React
         </a>
-
+    </div>
+      );
+    }
+    return (
+    <div className="UserAccountInfo">
+      {content}
     </div>
     );
   }
 }
 
-export default Main;
+export default UserAccountInfo;
