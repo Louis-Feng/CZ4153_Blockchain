@@ -10,6 +10,8 @@ import TokenCJS from "./contracts/TokenC.json";
 import DexJS from "./contracts/DEX.json";
 import UserAccountInfo from "./UserAccountInfo";
 import AllUserOffers from "./AllUserOffers"
+import AllGlobalOffers from './AllGlobalOffers';
+import {Link} from "react-router-dom";
 
 // import BasicTokenJS from "../../build/contracts/BasicToken.json";
 // import { ethers } from 'ethers';
@@ -155,7 +157,7 @@ class App extends Component{
         <UserAccountInfo
           userAddress={this.state.userAddress} token={this.state.token} tokensToTrade={this.state.tokensToTrade} dex={this.state.dex} web3 = {this.state.web3Provider}
         />
-        <AllUserOffers
+        <AllGlobalOffers
           userAddress={this.state.userAddress} token={this.state.token} tokensToTrade={this.state.tokensToTrade} dex={this.state.dex} web3 = {this.state.web3Provider}
         />
         
@@ -171,6 +173,10 @@ class App extends Component{
       <p>
           Edit <code>src/App.js</code> and save to reload.
         </p>
+      {/* <h1>This is the home page</h1> */}
+      <Link to="/">Click to view our about page</Link>
+      {/* <Link to="contact">Click to view our contact page</Link> */}
+
         {content}
         {/* {this.renderUserOrders()} */}
         

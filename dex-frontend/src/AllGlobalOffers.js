@@ -2,15 +2,16 @@
 import './App.css';
 import React, {Component} from "react";
 import UserOffers from "./UserOffers";
+import GlobalOffers from './GlobalOffers';
 
 
-class AllUserOffers extends Component{
+class AllGlobalOffers extends Component{
 
   constructor(props) {
     super(props);
   }
 
-  renderUserOrders() {
+  renderGlobalOrders() {
     // const web3 = window.web3;
     // let orderBookPrices = this.state.order[0];
     // let orderBookAmount = this.state.order[1];
@@ -25,8 +26,8 @@ class AllUserOffers extends Component{
         return (
         <div>
             <p>{key}</p>
-          <UserOffers userAddress={this.props.userAddress} token={this.props.token} tokenToTrade={this.props.tokensToTrade[key]} dex={this.props.dex} is_sell = {true}/>
-          <UserOffers userAddress={this.props.userAddress} token={this.props.token} tokenToTrade={this.props.tokensToTrade[key]} dex={this.props.dex} is_sell = {false}/>
+          <GlobalOffers userAddress={this.props.userAddress} token={this.props.token} tokenToTrade={this.props.tokensToTrade[key]} dex={this.props.dex} tokenName = {key} is_sell = {true}/>
+          <GlobalOffers userAddress={this.props.userAddress} token={this.props.token} tokenToTrade={this.props.tokensToTrade[key]} dex={this.props.dex} tokenName = {key} is_sell = {false}/>
         </div>);
       });
     }
@@ -48,11 +49,11 @@ class AllUserOffers extends Component{
     //   );
     // }
     return (
-    <div className="AllUserOffers">
-            {this.renderUserOrders()}
+    <div className="AllGlobalOffers">
+            {this.renderGlobalOrders()}
     </div>
     );
   }
 }
 
-export default AllUserOffers;
+export default AllGlobalOffers;
