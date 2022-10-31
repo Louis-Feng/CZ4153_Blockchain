@@ -5,9 +5,11 @@ import React, {Component} from "react";
 import Web3 from "web3";
 import BasicTokenJS from "./contracts/BasicToken.json";
 import TokenAJS from "./contracts/TokenA.json";
+import TokenBJS from "./contracts/TokenB.json";
+import TokenCJS from "./contracts/TokenC.json";
 import DexJS from "./contracts/DEX.json";
 import UserAccountInfo from "./UserAccountInfo";
-import UserOffers from "./UserOffers";
+import AllUserOffers from "./AllUserOffers"
 
 // import BasicTokenJS from "../../build/contracts/BasicToken.json";
 // import { ethers } from 'ethers';
@@ -22,7 +24,9 @@ class App extends Component{
       web3Provider: null,
       userAddress: "0x0",
       token: {},
-      tokenA: {},
+      tokensToTrade: {
+        tokenA: {},
+      },
       dex: {},
       is_loading : true,
 
@@ -108,12 +112,24 @@ class App extends Component{
     const networkId = await web3.eth.net.getId();
     const BasicTokenAddress = BasicTokenJS.networks[networkId].address;
     const TokenAAddress = TokenAJS.networks[networkId].address;
+    const TokenBAddress = TokenBJS.networks[networkId].address;
+    const TokenCAddress = TokenCJS.networks[networkId].address;
     const DexAddress = DexJS.networks[networkId].address;
     const token = new web3.eth.Contract(BasicTokenJS.abi, BasicTokenAddress);
     const tokenA = new web3.eth.Contract(TokenAJS.abi, TokenAAddress);
+    const tokenB = new web3.eth.Contract(TokenBJS.abi, TokenBAddress);
+    const tokenC = new web3.eth.Contract(TokenCJS.abi, TokenCAddress);
     const dex = new web3.eth.Contract(DexJS.abi, DexAddress);
 
-    this.setState({ token, tokenA, dex });
+    this.setState({ token, dex });
+    this.setState((prevState) =>({
+      tokensToTrade: {
+      ...prevState.userWallet,
+      tokenA,
+      tokenB,
+      tokenC
+      }
+    }))
     this.setState({is_loading: false});
        
     // const tokenBalance = await token.methods.balanceOf(this.state.userAddress).call()
@@ -122,6 +138,8 @@ class App extends Component{
     // console.log(tokenABalance)
     // await this.getBalance()
   }
+
+  
 
   render() {
     let content;
@@ -134,10 +152,15 @@ class App extends Component{
     } else {
       content = (
         <div>
-          <UserAccountInfo
-          userAddress={this.state.userAddress} token={this.state.token} tokenA={this.state.tokenA} dex={this.state.dex} web3 = {this.state.web3Provider}
+        <UserAccountInfo
+          userAddress={this.state.userAddress} token={this.state.token} tokensToTrade={this.state.tokensToTrade} dex={this.state.dex} web3 = {this.state.web3Provider}
         />
-        {/* <UserOffers/> */}
+        <AllUserOffers
+          userAddress={this.state.userAddress} token={this.state.token} tokensToTrade={this.state.tokensToTrade} dex={this.state.dex} web3 = {this.state.web3Provider}
+        />
+        
+         {/* <UserOffers userAddress={this.state.userAddress} token={this.state.token} tokenToTrade={this.state.tokensToTrade.tokenA} dex={this.state.dex} is_sell = {true}/>
+         <UserOffers userAddress={this.state.userAddress} token={this.state.token} tokenToTrade={this.state.tokensToTrade.tokenA} dex={this.state.dex} is_sell = {false}/> */}
         </div>
         
       );
@@ -149,6 +172,7 @@ class App extends Component{
           Edit <code>src/App.js</code> and save to reload.
         </p>
         {content}
+        {/* {this.renderUserOrders()} */}
         
       </header>
     </div>

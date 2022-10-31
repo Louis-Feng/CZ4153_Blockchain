@@ -10,7 +10,6 @@ class UserAccountInfo extends Component{
     this.state = {
       userWallet: {
         token_balance: 0,
-        tokenA_balance: 0,
         eth_balance: 0
       },
       is_loading: true
@@ -37,22 +36,44 @@ class UserAccountInfo extends Component{
       } else {
         window.alert("BasicToken contract not deployed to detected network");
       }
-
-      if (this.props.tokenA) {
-        let tokenA_balance = await this.props.tokenA.methods
-          .balanceOf(this.props.userAddress)
-          .call();
-        this.setState((prevState) => ({
-          userWallet: {
-            ...prevState.userWallet,
-            tokenA_balance: tokenA_balance,
-          },
-        }));
-        console.log("tokenA balence")
-        console.log(this.state.userWallet.tokenA_balance)
-      } else {
-        window.alert("TokenA contract not deployed to detected network");
+      for (const [key, tradingToken] of Object.entries(this.props.tokensToTrade)){
+        // var tokenName = key ;
+        if (tradingToken) {
+          let tradingToken_balance = await tradingToken.methods
+            .balanceOf(this.props.userAddress)
+            .call();
+          // var tradingTokenBalance = {}
+          // tradingTokenBalance[key] = tradingToken_balance
+          this.setState((prevState) => ({
+            userWallet: {
+              ...prevState.userWallet,
+              [key]: tradingToken_balance
+              // ${tokenName}: tradingToken_balance,
+            },
+          }));
+          console.log("tokenA balence")
+          console.log(this.state.userWallet)
+        } else {
+          window.alert("TokenA contract not deployed to detected network");
+        }
+        
       }
+
+      // if (this.props.tokenA) {
+      //   let tokenA_balance = await this.props.tokenA.methods
+      //     .balanceOf(this.props.userAddress)
+      //     .call();
+      //   this.setState((prevState) => ({
+      //     userWallet: {
+      //       ...prevState.userWallet,
+      //       tokenA_balance: tokenA_balance,
+      //     },
+      //   }));
+      //   console.log("tokenA balence")
+      //   console.log(this.state.userWallet.tokenA_balance)
+      // } else {
+      //   window.alert("TokenA contract not deployed to detected network");
+      // }
 
       if (this.props.dex) {
         let web3 = this.props.web3;
