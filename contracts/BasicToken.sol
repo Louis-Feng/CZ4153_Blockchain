@@ -10,7 +10,7 @@ contract BasicToken is IERC20 {
 
     string public constant name = "ND Coin";
     string public constant symbol = "NDN";
-    uint8 public constant decimals = 3;
+    uint8 public constant decimals = 18;
 
     mapping(address => uint256) balances;
 

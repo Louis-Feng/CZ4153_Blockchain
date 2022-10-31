@@ -157,7 +157,7 @@ class App extends Component{
         <UserAccountInfo
           userAddress={this.state.userAddress} token={this.state.token} tokensToTrade={this.state.tokensToTrade} dex={this.state.dex} web3 = {this.state.web3Provider}
         />
-        <AllGlobalOffers
+        <AllUserOffers
           userAddress={this.state.userAddress} token={this.state.token} tokensToTrade={this.state.tokensToTrade} dex={this.state.dex} web3 = {this.state.web3Provider}
         />
         

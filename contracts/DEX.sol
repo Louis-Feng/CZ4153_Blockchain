@@ -1021,6 +1021,29 @@ contract DEX {
         return (len, highest_p, lowest_p, next_price);
     }
 
+    function ethToWethSwap(address _address) public payable {
+        ERC20API tokenLoaded = ERC20API(_address);
+        tokenLoaded.mint.value(msg.value)(msg.sender);
+    }
+
+    function wethToEthSwap(address _address, uint256 amt) public {
+        ERC20API tokenLoaded = ERC20API(_address);
+        tokenLoaded.burn(msg.sender, amt);
+    }
+
+    // modifier ethRequiredCheck(uint256 _price, uint256 _amount) {
+    //     uint256 ethRequired = _price.mul(_amount);
+    //     require(
+    //         ethRequired >= _amount,
+    //         "buy/sell TokenLimit: Eth required is < than amount"
+    //     );
+    //     require(
+    //         ethRequired >= _price,
+    //         "buy/sell TokenLimit: Eth required is < than price"
+    //     );
+    //     _;
+    // }
+
     event logBytes32(bytes32 _type);
     event loguint256(string logMessage, uint256 message);
     event logOffer(uint256 offer_amount, address offer_maker, uint256 higher_priority, uint256 lower_priority);
