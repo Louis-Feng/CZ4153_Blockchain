@@ -23,7 +23,7 @@ class TradeToken extends React.Component {
       amountInput: 0,
       priceInput: "0.2",
       address: "0x0",
-      is_loading: true,
+      is_loading: false,
     };
 
     this.handleAmountChange = this.handleAmountChange.bind(this);
@@ -96,65 +96,78 @@ class TradeToken extends React.Component {
     //this.updateOrders();
   };
 
+
+
   render() {
+          var content
+          if (this.state.is_loading) {
+            content = (
+              <p id="loader" className="text-center">
+                Loading...
+              </p>
+            );
+          } else {
+            content = (
+              <AllGlobalOffers
+                userAddress={this.props.userAddress}
+                token={this.props.token}
+                tokensToTrade={this.props.tokensToTrade}
+                dex={this.props.dex}
+                web3={this.props.web3}
+          />
+            );}
     return (
-      // <div>
-      //   <h1>Welcome to Bank dApp</h1>
-      //   <p>Market Order </p>
-      //   <input
-      //     type="text"
-      //     placeholder="Enter amount"
-      //     value={this.state.value}
-      //     onChange={this.handleAmountChange}
-      //   />{" "}
-      //   <input
-      //     type="text"
-      //     placeholder="buy"
-      //     value={this.state.value}
-      //     onChange={this.handleIsBuyChange}
-      //   />{" "}
-      //   <input
-      //     type="text"
-      //     placeholder="A"
-      //     value={this.state.value}
-      //     onChange={this.handleTokenTypeChange}
-      //   />{" "}
-      //   <input type="submit" value="Submit" onClick={this.executeMarket} />
-      //   <p>Limit Order </p>
-      //   <input
-      //     type="text"
-      //     placeholder="Enter amount"
-      //     value={this.state.value}
-      //     onChange={this.handleAmountChange}
-      //   />{" "}
-      //   <input
-      //     type="text"
-      //     placeholder="Price"
-      //     value={this.state.value}
-      //     onChange={this.handlePriceChange}
-      //   />{" "}
-      //   <input
-      //     type="text"
-      //     placeholder="buy"
-      //     value={this.state.value}
-      //     onChange={this.handleIsBuyChange}
-      //   />{" "}
-      //   <input
-      //     type="text"
-      //     placeholder="A"
-      //     value={this.state.value}
-      //     onChange={this.handleTokenTypeChange}
-      //   />{" "}
-      //   <input type="submit" value="Submit" onClick={this.executeLimit} />
-      //   <AllGlobalOffers
-      //     userAddress={this.props.userAddress}
-      //     token={this.props.token}
-      //     tokensToTrade={this.props.tokensToTrade}
-      //     dex={this.props.dex}
-      //     web3={this.props.web3}
-      //   />
-      // </div>
-      <TabPage></TabPage>
+
+      <div>
+        <h1>Welcome to Bank dApp</h1>
+        <p>Market Order </p>
+        <input
+          type="text"
+          placeholder="Enter amount"
+          value={this.state.value}
+          onChange={this.handleAmountChange}
+        />{" "}
+        <input
+          type="text"
+          placeholder="buy"
+          value={this.state.value}
+          onChange={this.handleIsBuyChange}
+        />{" "}
+        <input
+          type="text"
+          placeholder="A"
+          value={this.state.value}
+          onChange={this.handleTokenTypeChange}
+        />{" "}
+        <input type="submit" value="Submit" onClick={this.executeMarket} />
+        <p>Limit Order </p>
+        <input
+          type="text"
+          placeholder="Enter amount"
+          value={this.state.value}
+          onChange={this.handleAmountChange}
+        />{" "}
+        <input
+          type="text"
+          placeholder="Price"
+          value={this.state.value}
+          onChange={this.handlePriceChange}
+        />{" "}
+        <input
+          type="text"
+          placeholder="buy"
+          value={this.state.value}
+          onChange={this.handleIsBuyChange}
+        />{" "}
+        <input
+          type="text"
+          placeholder="A"
+          value={this.state.value}
+          onChange={this.handleTokenTypeChange}
+        />{" "}
+        <input type="submit" value="Submit" onClick={this.executeLimit} />
+        {content}
+      </div>
     );
   }
 }
