@@ -5,17 +5,30 @@ import Form from "react-bootstrap/Form";
 import Badge from "react-bootstrap/Badge";
 
 class MarketOrderInfoCard extends Component {
-  state = {
-    orderType: this.props.orderType,
-    price: 0,
-    amount: 0,
-    tokenToTrade: this.props.tokenToTrade,
-  };
+  
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      orderType: this.props.orderType,
+      price: 0,
+      amount: 0,
+      tokenToTrade: this.props.tokenToTrade,
+    };
+    this.onSubmit = this.onSubmit.bind(this);
+    this.handelInputPriceChange = this.handelInputPriceChange.bind(this);
+    this.handelInputAmountChange = this.handelInputAmountChange.bind(this);
+    this.handelOrderTypeChange = this.handelOrderTypeChange.bind(this);
+  }
   componentDidUpdate(prevProps, preState) {
     if (preState.tokenToTrade !== this.props.tokenToTrade) {
       this.setState({ tokenToTrade: this.props.tokenToTrade });
     }
   }
+  handelInputPriceChange = (e) => {this.setState({ price: e.target.value })}
+  handelInputAmountChange = (e) => {this.setState({ amount: e.target.value })}
+  handelOrderTypeChange = (e) => {this.setState({ orderType: e.target.value })}
+
 
   onSubmit = (e) => {
     e.preventDefault();
@@ -24,6 +37,18 @@ class MarketOrderInfoCard extends Component {
     console.log("hello from ", this.state.orderType);
     console.log(this.state.price);
     console.log(this.state.amount);
+    if (
+      parseFloat(this.state.amount) <= 0 
+    ) {
+      alert("Please input positive values");
+    }else {
+      if (this.props.orderType === "Buy") {
+      this.props.executeMarket(this.state.amount, this.state.tokenToTrade, true);
+    } else if (this.props.orderType === "Sell") {
+      this.props.executeMarket(this.state.amount, this.state.tokenToTrade, false);
+    } 
+    }
+    
   };
 
   render() {
@@ -57,7 +82,7 @@ class MarketOrderInfoCard extends Component {
                   //onKeyDown={(evt) => evt.key === "e" && evt.preventDefault()}
                   placeholder="Enter Price"
                   value={this.state.price}
-                  onChange={(e) => this.setState({ price: e.target.value })}
+                  onChange={this.handelInputPriceChange}
                 />
                 <Form.Text className="text-muted">
                   Please enter the price you want to trade.
@@ -73,7 +98,7 @@ class MarketOrderInfoCard extends Component {
                   //onKeyDown={(evt) => evt.key === "e" && evt.preventDefault()}
                   placeholder="Enter Amount"
                   value={this.state.amount}
-                  onChange={(e) => this.setState({ amount: e.target.value })}
+                  onChange={this.handelInputAmountChange}
                 />
                 <Form.Text className="text-muted">
                   Please enter the amount you want to trade.

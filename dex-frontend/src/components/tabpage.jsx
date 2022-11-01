@@ -12,6 +12,8 @@ class TabPage extends Component {
     isMarket: true,
     tokenToTrade: "TokenA",
     is_loading: false,
+    executeLimit: this.props.executeLimit,
+    executeMarket: this.props.executeMarket
   };
   // componentDidUpdate(prevProps) {
   //   if (prevProps.tokenToTrade !== this.state.tokenToTrade) {
@@ -50,6 +52,8 @@ class TabPage extends Component {
       content = (
         <SubmitMarketOrderCard
           tokenToTrade={this.state.tokenToTrade}
+          executeLimit = {this.props.executeLimit}
+          executeMarket = {this.props.executeMarket}
         ></SubmitMarketOrderCard>
       );
     }
@@ -116,7 +120,7 @@ class TabPage extends Component {
                         onClick={() => {
                           this.setState({
                             is_loading: true,
-                            tokenToTrade: "tokenc",
+                            tokenToTrade: "tokenC",
                           });
                           this.setState({ is_loading: false });
                         }}
