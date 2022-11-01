@@ -50,7 +50,8 @@ class TradeToken extends React.Component {
         this.props.token._address,
 
         this.props.tokensToTrade.tokenA._address,
-        Web3.utils.toHex(Web3.utils.toWei(this.state.amountInput)),
+        // Web3.utils.toHex(Web3.utils.toWei(this.state.amountInput)),
+        this.state.amountInput,
         this.state.isBuy
           ? Web3.utils.asciiToHex("buy")
           : Web3.utils.asciiToHex("sell")
@@ -117,7 +118,7 @@ class TradeToken extends React.Component {
           value={this.state.value}
           onChange={this.handleTokenTypeChange}
         />{" "}
-        <input type="submit" value="Submit" onClick={this.executeMarket} />
+        <input type="submit" value="Submit" onClick={this.executeLimit} />
         <AllGlobalOffers
             userAddress={this.props.userAddress}
             token={this.props.token}

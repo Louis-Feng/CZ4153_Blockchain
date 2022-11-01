@@ -849,12 +849,12 @@ contract DEX {
                                 totalEtherToTrade
                             );
 
-                            desiredToken.approve(currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker, currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount);
+                            desiredToken.approve(currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker, currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount.mul(1e18));
 
                             desiredToken.transferFrom(
                                 currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker,
                                 msg.sender,
-                                currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount
+                                currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount.mul(1e18)
                             );
                         } else {
                             require(
@@ -870,12 +870,12 @@ contract DEX {
                                 totalEtherToTrade
                             );
 
-                            desiredToken.approve(msg.sender, currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount);
+                            desiredToken.approve(msg.sender, currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount.mul(1e18));
 
                             desiredToken.transferFrom(
                                 msg.sender,
                                 currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker,
-                                currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount
+                                currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount.mul(1e18)
                             );
                         }
 
@@ -905,12 +905,12 @@ contract DEX {
                                 totalEtherToTrade
                             );
 
-                            desiredToken.approve(currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker, amountLeftToTrade);
+                            desiredToken.approve(currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker, amountLeftToTrade.mul(1e18));
 
                             desiredToken.transferFrom(
                                 currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker,
                                 msg.sender,
-                                amountLeftToTrade
+                                amountLeftToTrade.mul(1e18)
                             );
                         } else {
 
@@ -927,12 +927,12 @@ contract DEX {
                                 totalEtherToTrade
                             );
 
-                            desiredToken.approve(msg.sender, amountLeftToTrade);
+                            desiredToken.approve(msg.sender, amountLeftToTrade.mul(1e18));
 
                             desiredToken.transferFrom(
                                 msg.sender,
                                 currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker,
-                                amountLeftToTrade
+                                amountLeftToTrade.mul(1e18)
                             );
                         }
 
