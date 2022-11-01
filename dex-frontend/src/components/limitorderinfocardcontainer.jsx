@@ -1,13 +1,8 @@
 import React, { Component } from "react";
-import Card from "react-bootstrap/Card";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
-import Badge from "react-bootstrap/Badge";
-import MarketOrderInfoCard from "./marketorderinfocard";
+import LimitOrderInfoCard from "./limitorderinfocard";
 
-class SubmitMarketOrderCard extends Component {
+class LimitOrderInfoCardContainer extends Component {
   state = {
-    price: 0,
     amount: 0,
     tokenToTrade: this.props.tokenToTrade,
   };
@@ -28,18 +23,18 @@ class SubmitMarketOrderCard extends Component {
     return (
       <React.Fragment>
         <div className="d-flex flex-row mx-4" style={containerStyle}>
-          <MarketOrderInfoCard
+          <LimitOrderInfoCard
             tokenToTrade={this.state.tokenToTrade}
             orderType="Buy"
-          ></MarketOrderInfoCard>
-          <MarketOrderInfoCard
+          ></LimitOrderInfoCard>
+          <LimitOrderInfoCard
             tokenToTrade={this.state.tokenToTrade}
             orderType="Sell"
-          ></MarketOrderInfoCard>
+          ></LimitOrderInfoCard>
         </div>
       </React.Fragment>
     );
   }
 }
 
-export default SubmitMarketOrderCard;
+export default LimitOrderInfoCardContainer;

@@ -4,9 +4,10 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Badge from "react-bootstrap/Badge";
 
-class MarketOrderInfoCard extends Component {
+class LimitOrderInfoCard extends Component {
   state = {
     orderType: this.props.orderType,
+    price: 0,
     amount: 0,
     tokenToTrade: this.props.tokenToTrade,
   };
@@ -28,9 +29,9 @@ class MarketOrderInfoCard extends Component {
   render() {
     const cardStyle = {
       width: "50vh",
-      height: "30vh",
+      height: "45vh",
     };
-    const formClasses = "mb-6";
+    const formClasses = "mb-3";
     const submitButtonStyles = {
       float: "right",
     };
@@ -48,11 +49,31 @@ class MarketOrderInfoCard extends Component {
             <Form>
               <Form.Group
                 className={formClasses}
+                controlId="formMarketOrderPrice"
+              >
+                <Form.Label>Price</Form.Label>
+                <Form.Control
+                  type="number"
+                  min="0.00"
+                  step="0.001"
+                  //onKeyDown={(evt) => evt.key === "e" && evt.preventDefault()}
+                  placeholder="Enter Price"
+                  value={this.state.price}
+                  onChange={(e) => this.setState({ price: e.target.value })}
+                />
+                <Form.Text className="text-muted">
+                  Please enter the price you want to trade.
+                </Form.Text>
+              </Form.Group>
+              <Form.Group
+                className={formClasses}
                 controlId="formBuyMarketOrderAmount"
               >
                 <Form.Label>Amount</Form.Label>
                 <Form.Control
                   type="number"
+                  min="0.00"
+                  step="0.001"
                   //onKeyDown={(evt) => evt.key === "e" && evt.preventDefault()}
                   placeholder="Enter Amount"
                   value={this.state.amount}
@@ -79,4 +100,4 @@ class MarketOrderInfoCard extends Component {
   }
 }
 
-export default MarketOrderInfoCard;
+export default LimitOrderInfoCard;
