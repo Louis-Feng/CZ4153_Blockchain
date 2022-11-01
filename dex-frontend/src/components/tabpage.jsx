@@ -12,6 +12,8 @@ class TabPage extends Component {
   state = {
     tokenToTrade: "TokenA",
     is_loading: false,
+    executeLimit: this.props.executeLimit,
+    executeMarket: this.props.executeMarket,
   };
   // componentDidUpdate(prevProps) {
   //   if (prevProps.tokenToTrade !== this.state.tokenToTrade) {

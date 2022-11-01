@@ -230,7 +230,7 @@ class UserAccountInfo extends Component {
                     role="group"
                     aria-label="Vertical radio toggle button group"
                   >
-                    <Link style={{ alignSelf: "stretch" }} to="/swapBasicToken">
+                    <Link style={{ alignSelf: "stretch" }} to={{pathname: "/swapBasicToken", state: { dataPassed: "This is the passed data." }}}>
                       <div>
                         <button
                           className="btn btn-outline-dark btn-lg"

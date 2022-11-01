@@ -31,10 +31,14 @@ class MarketOrderInfoCardContainer extends Component {
           <MarketOrderInfoCard
             tokenToTrade={this.state.tokenToTrade}
             orderType="Buy"
+            executeLimit = {this.props.executeLimit}
+            executeMarket = {this.props.executeMarket}
           ></MarketOrderInfoCard>
           <MarketOrderInfoCard
             tokenToTrade={this.state.tokenToTrade}
             orderType="Sell"
+            executeLimit = {this.props.executeLimit}
+            executeMarket = {this.props.executeMarket}
           ></MarketOrderInfoCard>
         </div>
       </React.Fragment>
