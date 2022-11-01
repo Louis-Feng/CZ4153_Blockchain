@@ -10,6 +10,7 @@ import AllGlobalOffers from "./AllGlobalOffers";
 import Web3 from "web3";
 import BankJS from "./contracts/Bank.json";
 import detectEthereumProvider from "@metamask/detect-provider";
+import TabPage from "./components/tabpage";
 
 // example from doc: https://reactjs.org/docs/forms.html#controlled-components
 class TradeToken extends React.Component {
@@ -116,6 +117,7 @@ class TradeToken extends React.Component {
           />
             );}
     return (
+
       <div>
         <h1>Welcome to Bank dApp</h1>
         <p>Market Order </p>
