@@ -143,7 +143,7 @@ contract DEX {
                             selfToken.Book[otherType].prices[currentPrice]
                             .offer_list[currentOffer]
                             .offer_maker,
-                            remainingAmount
+                            remainingAmount.mul(1e18)
                         );
                         // send weth to taker
                         token.transferFrom(
@@ -151,14 +151,14 @@ contract DEX {
                             .offer_list[currentOffer]
                             .offer_maker,
                             msg.sender,
-                            remainingAmount
+                            remainingAmount.mul(1e18)
                         );
                     }else{
                         require(getTokenBalance(msg.sender, _tokenAddress) >= remainingAmount, "seller has insufficient token");
                         // approve exchange to move token to maker
                         token.approve(
                             msg.sender,
-                            remainingAmount
+                            remainingAmount.mul(1e18)
                         );
                         emit logAddress(msg.sender);
                         // send token to maker
@@ -167,7 +167,7 @@ contract DEX {
                             selfToken.Book[otherType].prices[currentPrice]
                             .offer_list[currentOffer]
                             .offer_maker,
-                            remainingAmount
+                            remainingAmount.mul(1e18)
                         );
                         // approve exchange to move baseToken to maker
                         baseToken.approve(
@@ -262,7 +262,7 @@ contract DEX {
                             .offer_maker,
                             selfToken.Book[otherType].prices[currentPrice]
                                 .offer_list[currentOffer]
-                                .offer_amount
+                                .offer_amount.mul(1e18)
                         );
                         // send weth to taker
                         token.transferFrom(
@@ -272,7 +272,7 @@ contract DEX {
                             msg.sender,
                             selfToken.Book[otherType].prices[currentPrice]
                                 .offer_list[currentOffer]
-                                .offer_amount
+                                .offer_amount.mul(1e18)
                         );
                     }else{
                         require(getTokenBalance(msg.sender, _tokenAddress) >= selfToken.Book[otherType].prices[currentPrice]
@@ -284,7 +284,7 @@ contract DEX {
                             msg.sender,
                                 selfToken.Book[otherType].prices[currentPrice]
                                 .offer_list[currentOffer]
-                                .offer_amount
+                                .offer_amount.mul(1e18)
                         );
                         // send token to maker
                         token.transferFrom(
@@ -294,7 +294,7 @@ contract DEX {
                             .offer_maker,
                                 selfToken.Book[otherType].prices[currentPrice]
                                 .offer_list[currentOffer]
-                                .offer_amount
+                                .offer_amount.mul(1e18)
                         );
                         // approve exchange to move baseToken to maker
                         baseToken.approve(

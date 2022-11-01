@@ -102,7 +102,7 @@ class TradeToken extends React.Component {
         <p>Market Order </p>
         <input
           type="text"
-          placeholder="Enter amount (in Ether)"
+          placeholder="Enter amount"
           value={this.state.value}
           onChange={this.handleAmountChange}
         />{" "}
@@ -118,14 +118,40 @@ class TradeToken extends React.Component {
           value={this.state.value}
           onChange={this.handleTokenTypeChange}
         />{" "}
+        <input type="submit" value="Submit" onClick={this.executeMarket} />
+        <p>Limit Order </p>
+        <input
+          type="text"
+          placeholder="Enter amount"
+          value={this.state.value}
+          onChange={this.handleAmountChange}
+        />{" "}
+        <input
+          type="text"
+          placeholder="Price"
+          value={this.state.value}
+          onChange={this.handlePriceChange}
+        />{" "}
+        <input
+          type="text"
+          placeholder="buy"
+          value={this.state.value}
+          onChange={this.handleIsBuyChange}
+        />{" "}
+        <input
+          type="text"
+          placeholder="A"
+          value={this.state.value}
+          onChange={this.handleTokenTypeChange}
+        />{" "}
         <input type="submit" value="Submit" onClick={this.executeLimit} />
         <AllGlobalOffers
-            userAddress={this.props.userAddress}
-            token={this.props.token}
-            tokensToTrade={this.props.tokensToTrade}
-            dex={this.props.dex}
-            web3={this.props.web3}
-          />
+          userAddress={this.props.userAddress}
+          token={this.props.token}
+          tokensToTrade={this.props.tokensToTrade}
+          dex={this.props.dex}
+          web3={this.props.web3}
+        />
       </div>
     );
   }
