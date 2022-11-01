@@ -1030,19 +1030,26 @@ contract DEX {
 
     function swapBasicToken(address bank_address, address token_address) public payable {
         Bank ethBank = Bank(bank_address);
-        ethBank.deposit(msg.sender, msg.value);
+        ethBank.deposit.value(msg.value)(msg.sender);
         BasicToken token = BasicToken(token_address);
         token.mint(msg.sender, msg.value);
         
     }
-
     function withdrawEth(address bank_address, address token_address, uint value) public {
         BasicToken token = BasicToken(token_address);
         token.burn(msg.sender, value);
         Bank ethBank = Bank(bank_address);
-        ethBank.withdraw(value);
+        ethBank.withdraw(value, msg.sender);
         
     }
+
+    // function withdrawEth(address bank_address, address token_address, uint value) public {
+    //     BasicToken token = BasicToken(token_address);
+    //     token.burn(msg.sender, value);
+    //     Bank ethBank = Bank(bank_address);
+    //     ethBank.withdraw(value);
+        
+    // }
 
     // modifier ethRequiredCheck(uint256 _price, uint256 _amount) {
     //     uint256 ethRequired = _price.mul(_amount);

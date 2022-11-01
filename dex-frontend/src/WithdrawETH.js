@@ -132,50 +132,58 @@ class WithDrawETH extends React.Component {
   };
   handleNewWithdraw = async () => {
     // await this.newDeposit(this.state.depositInput)
+    // this.setState({ is_loading: true })
+
+
+    // const web3 = this.props.web3;
+    // await this.props.contract.methods
+    //   .withdraw(
+    //     web3.utils.toHex(web3.utils.toWei(this.state.withdrawInput))
+    //   )
+    //   .send({ from: this.props.userAddress })
+    //   .on("transactionHash", (hash) => {})
+    //   .on("error", (error) => {
+    //     if (error.message.includes("User denied transaction signature")) {
+    //       this.setState({ is_loading: false });
+    //     }
+    //   });
+
+    //   await this.props.token.methods
+    //   .burn(
+    //     this.props.userAddress,
+    //     web3.utils.toHex(web3.utils.toWei(this.state.withdrawInput))
+    //   )
+    //   .send({ from: this.props.userAddress })
+    //   .on("transactionHash", (hash) => {})
+    //   .on("error", (error) => {
+    //     if (error.message.includes("User denied transaction signature")) {
+    //       this.setState({ is_loading: false });
+    //     }
+    //   });
+
     const web3 = this.props.web3;
-    await this.props.contract.methods
-      .withdraw(
+    await this.props.dex.methods
+      .withdrawEth(
+        this.props.contract._address,
+        this.props.token._address,
         web3.utils.toHex(web3.utils.toWei(this.state.withdrawInput))
       )
-      .send({ from: this.props.userAddress })
+      .send({ from: this.props.userAddress})
       .on("transactionHash", (hash) => {})
       .on("error", (error) => {
         if (error.message.includes("User denied transaction signature")) {
           this.setState({ is_loading: false });
         }
-      });
-      await this.props.token.methods
-      .burn(
-        this.props.userAddress,
-        web3.utils.toHex(web3.utils.toWei(this.state.withdrawInput))
-      )
-      .send({ from: this.props.userAddress })
-      .on("transactionHash", (hash) => {})
-      .on("error", (error) => {
-        if (error.message.includes("User denied transaction signature")) {
-          this.setState({ is_loading: false });
-        }
-      });
+    });
+    // this.setState({ is_loading: false })
   };
 
   render() {
     return (
       <div>
-        <h1>Welcome to Bank dApp</h1>
-        <p>Bank Contract Address: {this.props.contract._address}</p>
-        <p>Network: </p>
-        <hr />
-        <input
-          type="text"
-          placeholder="Enter address to query"
-          value={this.state.value}
-          onChange={this.handleQueryChange}
-        />{" "}
-        <input type="submit" value="Query Deposit" onClick={this.handleQuery} />
-        <p>
-          Query Result: {this.state.address} has deposit of {this.state.deposit}{" "}
-          wei
-        </p>
+        <h1>Withdraw BasicToken to ETH</h1>
+        <p>User Address: {this.props.userAddress}</p>
+        <p>ether balance: </p>
         <hr />
         <input
           type="text"

@@ -84,7 +84,9 @@ contract BasicToken is IERC20 {
     }
 
     function burn(address account, uint value) public returns (bool) {
+        require(balances[account]>= value, "insufficinet BasicToken");
         // sender.transfer(value);
+
 
         balances[account] = balances[account].sub(
             value,

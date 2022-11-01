@@ -174,11 +174,13 @@ class App extends Component {
         <Route path="/swapBasicToken" element={<SwapBasicToken userAddress={this.state.userAddress}
             contract={this.state.bank}
             token = {this.state.token}
+            dex = {this.state.dex}
             web3={this.state.web3Provider}/>} />
         {/* <Route path="/service" component={Service} /> */}
         <Route path="/withdrawETH" element={<WithDrawETH userAddress={this.state.userAddress}
             contract={this.state.bank}
             token = {this.state.token}
+            dex = {this.state.dex}
             web3={this.state.web3Provider}/>} />
        </Routes>
        
