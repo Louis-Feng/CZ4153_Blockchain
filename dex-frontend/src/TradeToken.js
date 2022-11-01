@@ -10,6 +10,7 @@ import AllGlobalOffers from "./AllGlobalOffers";
 import Web3 from "web3";
 import BankJS from "./contracts/Bank.json";
 import detectEthereumProvider from "@metamask/detect-provider";
+import TabPage from "./components/tabpage";
 
 // example from doc: https://reactjs.org/docs/forms.html#controlled-components
 class TradeToken extends React.Component {
@@ -97,62 +98,63 @@ class TradeToken extends React.Component {
 
   render() {
     return (
-      <div>
-        <h1>Welcome to Bank dApp</h1>
-        <p>Market Order </p>
-        <input
-          type="text"
-          placeholder="Enter amount"
-          value={this.state.value}
-          onChange={this.handleAmountChange}
-        />{" "}
-        <input
-          type="text"
-          placeholder="buy"
-          value={this.state.value}
-          onChange={this.handleIsBuyChange}
-        />{" "}
-        <input
-          type="text"
-          placeholder="A"
-          value={this.state.value}
-          onChange={this.handleTokenTypeChange}
-        />{" "}
-        <input type="submit" value="Submit" onClick={this.executeMarket} />
-        <p>Limit Order </p>
-        <input
-          type="text"
-          placeholder="Enter amount"
-          value={this.state.value}
-          onChange={this.handleAmountChange}
-        />{" "}
-        <input
-          type="text"
-          placeholder="Price"
-          value={this.state.value}
-          onChange={this.handlePriceChange}
-        />{" "}
-        <input
-          type="text"
-          placeholder="buy"
-          value={this.state.value}
-          onChange={this.handleIsBuyChange}
-        />{" "}
-        <input
-          type="text"
-          placeholder="A"
-          value={this.state.value}
-          onChange={this.handleTokenTypeChange}
-        />{" "}
-        <input type="submit" value="Submit" onClick={this.executeLimit} />
-        <AllGlobalOffers
-          userAddress={this.props.userAddress}
-          token={this.props.token}
-          tokensToTrade={this.props.tokensToTrade}
-          dex={this.props.dex}
-          web3={this.props.web3}
-        />
-      </div>
+      // <div>
+      //   <h1>Welcome to Bank dApp</h1>
+      //   <p>Market Order </p>
+      //   <input
+      //     type="text"
+      //     placeholder="Enter amount"
+      //     value={this.state.value}
+      //     onChange={this.handleAmountChange}
+      //   />{" "}
+      //   <input
+      //     type="text"
+      //     placeholder="buy"
+      //     value={this.state.value}
+      //     onChange={this.handleIsBuyChange}
+      //   />{" "}
+      //   <input
+      //     type="text"
+      //     placeholder="A"
+      //     value={this.state.value}
+      //     onChange={this.handleTokenTypeChange}
+      //   />{" "}
+      //   <input type="submit" value="Submit" onClick={this.executeMarket} />
+      //   <p>Limit Order </p>
+      //   <input
+      //     type="text"
+      //     placeholder="Enter amount"
+      //     value={this.state.value}
+      //     onChange={this.handleAmountChange}
+      //   />{" "}
+      //   <input
+      //     type="text"
+      //     placeholder="Price"
+      //     value={this.state.value}
+      //     onChange={this.handlePriceChange}
+      //   />{" "}
+      //   <input
+      //     type="text"
+      //     placeholder="buy"
+      //     value={this.state.value}
+      //     onChange={this.handleIsBuyChange}
+      //   />{" "}
+      //   <input
+      //     type="text"
+      //     placeholder="A"
+      //     value={this.state.value}
+      //     onChange={this.handleTokenTypeChange}
+      //   />{" "}
+      //   <input type="submit" value="Submit" onClick={this.executeLimit} />
+      //   <AllGlobalOffers
+      //     userAddress={this.props.userAddress}
+      //     token={this.props.token}
+      //     tokensToTrade={this.props.tokensToTrade}
+      //     dex={this.props.dex}
+      //     web3={this.props.web3}
+      //   />
+      // </div>
+      <TabPage></TabPage>
     );
   }
 }
