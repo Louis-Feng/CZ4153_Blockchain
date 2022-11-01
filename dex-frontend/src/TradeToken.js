@@ -8,7 +8,7 @@ import TabPage from "./components/tabpage";
 //   Testnet,
 // } from "./bank.js";
 
-import Web3 from "web3";
+// import Web3 from "web3";
 import BankJS from "./contracts/Bank.json";
 import detectEthereumProvider from "@metamask/detect-provider";
 // import TabPage from "./components/tabpage";
@@ -47,6 +47,7 @@ class TradeToken extends React.Component {
   // };
   executeMarket = async (amountInput,tokenName, isBuy) => {
     this.setState({ is_loading: true });
+    const web3 = this.props.web3;
     var tokenToTrade;
     console.log(tokenName.toUpperCase())
     switch (tokenName.toUpperCase()) {
@@ -64,8 +65,8 @@ class TradeToken extends React.Component {
         // this.props.tokensToTrade.tokenA._address,
         amountInput,
         isBuy
-        ? Web3.utils.asciiToHex("buy")
-          : Web3.utils.asciiToHex("sell")
+        ? web3.utils.asciiToHex("buy")
+          : web3.utils.asciiToHex("sell")
       )
       .send({ from: this.props.userAddress })
       .on("transactionHash", (hash) => {})
@@ -85,6 +86,7 @@ class TradeToken extends React.Component {
 
   executeLimit = async (priceInput, amountInput,tokenName, isBuy) => {
     this.setState({ is_loading: true });
+    const web3 = this.props.web3;
     var tokenToTrade;
     console.log(tokenName.toUpperCase())
     switch (tokenName.toUpperCase()) {
@@ -99,7 +101,7 @@ class TradeToken extends React.Component {
       .executeLimitOrder(
         this.props.token._address,
         tokenToTrade._address,
-        Web3.utils.toHex(Web3.utils.toWei(priceInput)),
+        web3.utils.toHex(web3.utils.toWei(priceInput)),
         amountInput,
         isBuy
       )
@@ -130,7 +132,7 @@ class TradeToken extends React.Component {
   //         : this.state.tokenType === "B"
   //         ? this.props.tokensToTrade.tokenB._address
   //         : this.props.tokensToTrade.tokenC._address,
-  //       Web3.utils.toHex(Web3.utils.toWei(this.state.priceInput)),
+  //       web3.utils.toHex(web3.utils.toWei(this.state.priceInput)),
   //       this.state.amountInput,
   //       this.state.isBuy
   //     )

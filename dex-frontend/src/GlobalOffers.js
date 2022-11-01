@@ -1,7 +1,7 @@
 import './App.css';
 import React, {Component} from "react";
 import {Button, Table} from "react-bootstrap";
-import Web3 from 'web3';
+// import Web3 from 'web3';
 // import {Col} from "react-bootstrap";
 // import {Row} from "react-bootstrap";
 // import Table from "react-bootstrap/Table";
@@ -70,7 +70,7 @@ class GlobalOffers extends Component{
 
         return this.state.ordersPrices.map((p, index) => {
           // const price = this.props.web3.utils.fromWei(p, "Ether");
-          const price = Web3.utils.fromWei(p, "Ether");
+          const price = this.props.web3.utils.fromWei(p, "Ether");
         //   const amount = web3.utils.fromWei(orderBookAmount[index], "Ether");
           return (
             <>
