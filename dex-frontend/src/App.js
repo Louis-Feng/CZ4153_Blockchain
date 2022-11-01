@@ -12,13 +12,13 @@ import UserAccountInfo from "./UserAccountInfo";
 import BankJS from "./contracts/Bank.json";
 import detectEthereumProvider from "@metamask/detect-provider";
 import { BrowserRouter, Router, Routes, Route, Link } from "react-router-dom";
-import AllUserOffers from "./AllUserOffers"
-import AllGlobalOffers from './AllGlobalOffers';
+import AllUserOffers from "./AllUserOffers";
+import AllGlobalOffers from "./AllGlobalOffers";
 import SwapBasicToken from "./SwapBasicToken";
 import UserPage from "./UserPage";
 import WithDrawETH from "./WithdrawETH";
+import TradeToken from "./TradeToken";
 // import {Link} from "react-router-dom";
-
 
 // import BasicTokenJS from "../../build/contracts/BasicToken.json";
 // import { ethers } from 'ethers';
@@ -161,29 +161,58 @@ class App extends Component {
     } else {
       content = (
         <div>
-          
-      <BrowserRouter>
-      <Routes>
-          <Route path="/" element={<UserPage 
-            userAddress={this.state.userAddress}
-            token={this.state.token}
-            tokensToTrade={this.state.tokensToTrade}
-            dex={this.state.dex}
-            web3={this.state.web3Provider}
-          />} />
-        <Route path="/swapBasicToken" element={<SwapBasicToken userAddress={this.state.userAddress}
-            contract={this.state.bank}
-            token = {this.state.token}
-            web3={this.state.web3Provider}/>} />
-        {/* <Route path="/service" component={Service} /> */}
-        <Route path="/withdrawETH" element={<WithDrawETH userAddress={this.state.userAddress}
-            contract={this.state.bank}
-            token = {this.state.token}
-            web3={this.state.web3Provider}/>} />
-       </Routes>
-       
-        {/* <Route path="/service" component={Service} /> */}
-    </BrowserRouter>
+          <BrowserRouter>
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <UserPage
+                    userAddress={this.state.userAddress}
+                    token={this.state.token}
+                    tokensToTrade={this.state.tokensToTrade}
+                    dex={this.state.dex}
+                    web3={this.state.web3Provider}
+                  />
+                }
+              />
+              <Route
+                path="/TradeToken"
+                element={
+                  <TradeToken
+                    userAddress={this.state.userAddress}
+                    dex={this.state.dex}
+                    token={this.state.token}
+                    tokensToTrade={this.state.tokensToTrade}
+                  />
+                }
+              />
+              <Route
+                path="/swapBasicToken"
+                element={
+                  <SwapBasicToken
+                    userAddress={this.state.userAddress}
+                    contract={this.state.bank}
+                    token={this.state.token}
+                    web3={this.state.web3Provider}
+                  />
+                }
+              />
+              {/* <Route path="/service" component={Service} /> */}
+              <Route
+                path="/withdrawETH"
+                element={
+                  <WithDrawETH
+                    userAddress={this.state.userAddress}
+                    contract={this.state.bank}
+                    token={this.state.token}
+                    web3={this.state.web3Provider}
+                  />
+                }
+              />
+            </Routes>
+
+            {/* <Route path="/service" component={Service} /> */}
+          </BrowserRouter>
           {/* <UserPage userAddress={this.state.userAddress}
             token={this.state.token}
             tokensToTrade={this.state.tokensToTrade}
@@ -212,12 +241,11 @@ class App extends Component {
     }
     return (
       <div className="App">
-      <header className="App-header">
-      {/* <h1>This is the home page</h1> */}
-    
+        <header className="App-header">
+          {/* <h1>This is the home page</h1> */}
 
-        {content}
-      </header>
+          {content}
+        </header>
       </div>
     );
   }
