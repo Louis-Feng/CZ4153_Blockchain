@@ -1,10 +1,9 @@
 import logo from "./logo.svg";
 import "./App.css";
 import React, { Component } from "react";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.css";
 import Badge from "./components/tokenbadge";
-
 
 class UserAccountInfo extends Component {
   constructor(props) {
@@ -72,8 +71,8 @@ class UserAccountInfo extends Component {
 
     if (this.props.dex) {
       let web3 = this.props.web3;
-      console.log(this.props.web3)
-      console.log(this.props.userAddress)
+      console.log(this.props.web3);
+      console.log(this.props.userAddress);
       let eth_balance = await web3.eth.getBalance(this.props.userAddress);
       this.setState((prevState) => ({
         userWallet: {
@@ -87,7 +86,6 @@ class UserAccountInfo extends Component {
       window.alert("dex contract not deployed to detected network");
     }
     this.setState({ is_loading: false });
-
   }
 
   //   componentDidUpdate(prevProps, prevState) {
@@ -114,11 +112,14 @@ class UserAccountInfo extends Component {
       }
       tokenAndBalance.push(
         <tr>
-          <th scope="row" >
-            <Badge color="dark"  badgeName={temp}></Badge>
+          <th scope="row">
+            <Badge color="dark" badgeName={temp}></Badge>
           </th>
           <td>
-            <Badge color="info" badgeName={this.props.web3.utils.fromWei(tokenBalance)}></Badge>
+            <Badge
+              color="info"
+              badgeName={this.props.web3.utils.fromWei(tokenBalance)}
+            ></Badge>
           </td>
         </tr>
       );
@@ -154,7 +155,7 @@ class UserAccountInfo extends Component {
       width: "40vh",
       height: "40vh",
     };
-    
+
     let content;
     if (this.state.is_loading) {
       content = (
@@ -164,7 +165,6 @@ class UserAccountInfo extends Component {
       );
     } else {
       content = (
-
         <React.Fragment>
           <div className="d-flex flex-column" style={containerStyle}>
             <div
@@ -230,28 +230,44 @@ class UserAccountInfo extends Component {
                     role="group"
                     aria-label="Vertical radio toggle button group"
                   >
-                    <Link style={{ alignSelf: 'stretch' }} to={{pathname: "/swapBasicToken"}}><div>
-                      <button className="btn btn-outline-dark btn-lg" style={{width: "100%"}}>
-                      <span style={{ fontWeight: "bold" }}>Swap Token</span>
-                    </button>
-                      </div></Link>
-                    
-                    <Link to="/withdrawETH"><button className="btn btn-outline-dark btn-lg" style={{width: "100%"}}>
-                      <span style={{ fontWeight: "bold" }}>Withdraw Token</span>
-                    </button></Link>
+                    <Link style={{ alignSelf: "stretch" }} to="/swapBasicToken">
+                      <div>
+                        <button
+                          className="btn btn-outline-dark btn-lg"
+                          style={{ width: "100%" }}
+                        >
+                          <span style={{ fontWeight: "bold" }}>Swap Token</span>
+                        </button>
+                      </div>
+                    </Link>
+
+                    <Link to="/withdrawETH">
+                      <button
+                        className="btn btn-outline-dark btn-lg"
+                        style={{ width: "100%" }}
+                      >
+                        <span style={{ fontWeight: "bold" }}>
+                          Withdraw Token
+                        </span>
+                      </button>
+                    </Link>
+                    <Link to="/TradeToken">
+                      <button
+                        className="btn btn-outline-dark btn-lg"
+                        style={{ width: "100%" }}
+                      >
+                        <span style={{ fontWeight: "bold" }}>Trade Token</span>
+                      </button>
+                    </Link>
                     {/* <button className="btn btn-outline-dark btn-lg">
                       <span style={{ fontWeight: "bold" }}>Withdraw Token</span>
                     </button> */}
-                    <button className="btn btn-outline-dark btn-lg" style={{width: "100%"}}>
-                      <span style={{ fontWeight: "bold" }}>Trade Token</span>
-                    </button>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </React.Fragment>
-
       );
     }
     return <div className="UserAccountInfo">{content}</div>;

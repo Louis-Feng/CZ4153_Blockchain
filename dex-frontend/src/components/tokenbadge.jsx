@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import "bootstrap/dist/css/bootstrap.css";
+import "react-router-dom";
 
 class Badge extends Component {
   state = {
