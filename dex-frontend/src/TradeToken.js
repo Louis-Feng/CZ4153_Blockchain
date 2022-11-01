@@ -1,5 +1,5 @@
 import React from "react";
-
+import AllGlobalOffers from "./AllGlobalOffers";
 // import {
 //   updateDeposit,
 //   newDeposit,
@@ -20,7 +20,7 @@ class TradeToken extends React.Component {
       isBuy: true,
       isMarket: true,
       amountInput: 0,
-      priceInput: 0,
+      priceInput: "0.2",
       address: "0x0",
       is_loading: true,
     };
@@ -78,8 +78,8 @@ class TradeToken extends React.Component {
           : this.state.tokenType === "B"
           ? this.props.tokensToTrade.tokenB._address
           : this.props.tokensToTrade.tokenC._address,
-        this.state.priceInput,
-        Web3.utils.toHex(Web3.utils.toWei(this.state.amountInput)),
+        Web3.utils.toHex(Web3.utils.toWei(this.state.priceInput)),
+        this.state.amountInput,
         this.state.isBuy
       )
       .send({ from: this.props.userAddress })
@@ -118,6 +118,13 @@ class TradeToken extends React.Component {
           onChange={this.handleTokenTypeChange}
         />{" "}
         <input type="submit" value="Submit" onClick={this.executeMarket} />
+        <AllGlobalOffers
+            userAddress={this.props.userAddress}
+            token={this.props.token}
+            tokensToTrade={this.props.tokensToTrade}
+            dex={this.props.dex}
+            web3={this.props.web3}
+          />
       </div>
     );
   }

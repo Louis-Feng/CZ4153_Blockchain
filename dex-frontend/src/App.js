@@ -183,6 +183,7 @@ class App extends Component {
                     dex={this.state.dex}
                     token={this.state.token}
                     tokensToTrade={this.state.tokensToTrade}
+                    web3={this.props.web3}
                   />
                 }
               />
@@ -193,6 +194,7 @@ class App extends Component {
                     userAddress={this.state.userAddress}
                     contract={this.state.bank}
                     token={this.state.token}
+                    dex={this.state.dex}
                     web3={this.state.web3Provider}
                   />
                 }
@@ -205,6 +207,7 @@ class App extends Component {
                     userAddress={this.state.userAddress}
                     contract={this.state.bank}
                     token={this.state.token}
+                    dex={this.state.dex}
                     web3={this.state.web3Provider}
                   />
                 }

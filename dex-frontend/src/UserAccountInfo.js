@@ -241,7 +241,7 @@ class UserAccountInfo extends Component {
                       </div>
                     </Link>
 
-                    <Link to="/withdrawETH">
+                    <Link style={{ alignSelf: "stretch" }} to="/withdrawETH">
                       <button
                         className="btn btn-outline-dark btn-lg"
                         style={{ width: "100%" }}
@@ -251,7 +251,7 @@ class UserAccountInfo extends Component {
                         </span>
                       </button>
                     </Link>
-                    <Link to="/TradeToken">
+                    <Link style={{ alignSelf: "stretch" }} to="/TradeToken">
                       <button
                         className="btn btn-outline-dark btn-lg"
                         style={{ width: "100%" }}
