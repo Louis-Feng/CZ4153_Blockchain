@@ -2,6 +2,8 @@
 import "./App.css";
 import React, { Component } from "react";
 import UserOffers from "./UserOffers";
+import {Col} from "react-bootstrap";
+import {Row} from "react-bootstrap";
 
 
 
@@ -26,9 +28,25 @@ class AllUserOffers extends Component{
         // const amount = web3.utils.fromWei(orderBookAmount[index], "Ether");
         return (
           <div>
-            <p>{key}</p>
-            <div style={{ display: "flex", flexDirection: "row" }}>
-              <UserOffers
+            <h1>{key}</h1>
+            <div style={{ display: "flex", flexDirection: "row"}}>
+            {/* <div className="card mb-4"> */}
+          
+            <div className="card-body">
+            <Row className="mb-4">
+              <Col>
+                <b>Sell Book</b>
+              </Col>
+              <Col>
+                <b>Buy Book</b>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <div className="card mb-4">
+                  <div className="card-body">
+                  <UserOffers
+                web3 = {this.props.web3}
                 userAddress={this.props.userAddress}
                 token={this.props.token}
                 tokenToTrade={this.props.tokensToTrade[key]}
@@ -36,7 +54,14 @@ class AllUserOffers extends Component{
                 tokenName={key}
                 is_sell={true}
               />
-              <UserOffers
+                  </div>
+                </div>
+              </Col>
+              <Col>
+                <div className="card mb-4">
+                  <div className="card-body">
+                  <UserOffers
+                web3 = {this.props.web3}
                 userAddress={this.props.userAddress}
                 token={this.props.token}
                 tokenToTrade={this.props.tokensToTrade[key]}
@@ -44,8 +69,17 @@ class AllUserOffers extends Component{
                 tokenName={key}
                 is_sell={false}
               />
-            </div>
+                  </div>
+                </div>
+              </Col>
+            </Row>
           </div>
+              
+              
+            </div>
+            </div>
+        //   </div>
+
         );
       });
     }

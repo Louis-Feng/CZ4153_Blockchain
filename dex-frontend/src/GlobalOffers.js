@@ -42,8 +42,6 @@ class GlobalOffers extends Component{
     for (var i = 0; i < Object.keys(arr).length; i++) {
         array[i] = arr[i].filter(function(value, index, arr){ 
             return value !== "0";
-        }).map(function(item) {
-            return parseInt(item, 10);
         });
     }
     return array;
@@ -69,16 +67,17 @@ class GlobalOffers extends Component{
 
   renderOrder() {
 
-        return this.state.ordersPrices.map((price, index) => {
-        //   const price = web3.utils.fromWei(s, "Ether");
+        return this.state.ordersPrices.map((p, index) => {
+          const price = this.props.web3.utils.fromWei(p, "Ether");
         //   const amount = web3.utils.fromWei(orderBookAmount[index], "Ether");
           return (
             <>
-              <tr>
-                <td>{price}</td>
-                <td>{this.state.ordersVolumes[index]}</td>
-              </tr>
-            </>
+          <tr>
+            <td>{this.props.tokenName.toUpperCase()}</td>
+            <td>{price}</td>
+            <td>{this.state.ordersVolumes[index]}</td>
+          </tr>
+        </>
           );
         });
   }
@@ -93,16 +92,16 @@ class GlobalOffers extends Component{
         </p>
       );
     } else if (this.state.ordersPrices.length === 0) {
-        content = ( <p>Current Order Book is Empty</p>);
+        content = ( <p style={{ color: 'black' }}>Current Order Book is Empty</p>);
     } else {
       content = (
         <>
         <Table striped bordered hover size="sm">
           <thead>
             <tr>
+              <th>Token Name</th>
               <th>Amount</th>
               <th>Price</th>
-              <th>cancle button</th>
             </tr>
           </thead>
           <tbody>{this.renderOrder()}</tbody>

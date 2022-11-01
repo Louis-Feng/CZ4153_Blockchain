@@ -9,10 +9,15 @@ import TokenBJS from "./contracts/TokenB.json";
 import TokenCJS from "./contracts/TokenC.json";
 import DexJS from "./contracts/DEX.json";
 import UserAccountInfo from "./UserAccountInfo";
-
+import BankJS from "./contracts/Bank.json";
+import detectEthereumProvider from "@metamask/detect-provider";
+import { BrowserRouter, Router, Routes, Route, Link } from "react-router-dom";
 import AllUserOffers from "./AllUserOffers"
 import AllGlobalOffers from './AllGlobalOffers';
-import {Link} from "react-router-dom";
+import SwapBasicToken from "./SwapBasicToken";
+import UserPage from "./UserPage";
+import WithDrawETH from "./WithdrawETH";
+// import {Link} from "react-router-dom";
 
 
 // import BasicTokenJS from "../../build/contracts/BasicToken.json";
@@ -25,6 +30,7 @@ class App extends Component {
     this.state = {
       web3Provider: null,
       userAddress: "0x0",
+      bank: {},
       token: {},
       tokensToTrade: {
         tokenA: {},
@@ -124,16 +130,17 @@ class App extends Component {
     const tokenB = new web3.eth.Contract(TokenBJS.abi, TokenBAddress);
     const tokenC = new web3.eth.Contract(TokenCJS.abi, TokenCAddress);
     const dex = new web3.eth.Contract(DexJS.abi, DexAddress);
+    const BankAddress = BankJS.networks[networkId].address;
+    const bank = new web3.eth.Contract(BankJS.abi, BankAddress);
 
-    this.setState({ token, dex });
-    this.setState((prevState) => ({
+    this.setState({ token, dex, bank });
+    this.setState({
       tokensToTrade: {
-        ...prevState.userWallet,
         tokenA,
         tokenB,
         tokenC,
       },
-    }));
+    });
     this.setState({ is_loading: false });
 
     // const tokenBalance = await token.methods.balanceOf(this.state.userAddress).call()
@@ -154,7 +161,36 @@ class App extends Component {
     } else {
       content = (
         <div>
-          <UserAccountInfo
+          
+      <BrowserRouter>
+      <Routes>
+          <Route path="/" element={<UserPage 
+            userAddress={this.state.userAddress}
+            token={this.state.token}
+            tokensToTrade={this.state.tokensToTrade}
+            dex={this.state.dex}
+            web3={this.state.web3Provider}
+          />} />
+        <Route path="/swapBasicToken" element={<SwapBasicToken userAddress={this.state.userAddress}
+            contract={this.state.bank}
+            token = {this.state.token}
+            web3={this.state.web3Provider}/>} />
+        {/* <Route path="/service" component={Service} /> */}
+        <Route path="/withdrawETH" element={<WithDrawETH userAddress={this.state.userAddress}
+            contract={this.state.bank}
+            token = {this.state.token}
+            web3={this.state.web3Provider}/>} />
+       </Routes>
+       
+        {/* <Route path="/service" component={Service} /> */}
+    </BrowserRouter>
+          {/* <UserPage userAddress={this.state.userAddress}
+            token={this.state.token}
+            tokensToTrade={this.state.tokensToTrade}
+            dex={this.state.dex}
+            web3={this.state.web3Provider}
+          /> */}
+          {/* <UserAccountInfo
             userAddress={this.state.userAddress}
             token={this.state.token}
             tokensToTrade={this.state.tokensToTrade}
@@ -167,7 +203,7 @@ class App extends Component {
             tokensToTrade={this.state.tokensToTrade}
             dex={this.state.dex}
             web3={this.state.web3Provider}
-          />
+          /> */}
 
           {/* <UserOffers userAddress={this.state.userAddress} token={this.state.token} tokenToTrade={this.state.tokensToTrade.tokenA} dex={this.state.dex} is_sell = {true}/>
          <UserOffers userAddress={this.state.userAddress} token={this.state.token} tokenToTrade={this.state.tokensToTrade.tokenA} dex={this.state.dex} is_sell = {false}/> */}
@@ -177,15 +213,11 @@ class App extends Component {
     return (
       <div className="App">
       <header className="App-header">
-      <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
       {/* <h1>This is the home page</h1> */}
-      <Link to="/">Click to view our about page</Link>
-      {/* <Link to="contact">Click to view our contact page</Link> */}
+    
 
         {content}
-        {/* {this.renderUserOrders()} */}
+      </header>
       </div>
     );
   }

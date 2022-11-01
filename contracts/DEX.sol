@@ -3,6 +3,8 @@ pragma solidity >=0.4.22 <0.9.0;
 import "../utils/SafeMath.sol";
 import "./ERC20API.sol";
 import "./IERC20.sol";
+import "./EthBank.sol";
+import "./BasicToken.sol";
 
 
 contract DEX {
@@ -1021,14 +1023,25 @@ contract DEX {
         return (len, highest_p, lowest_p, next_price);
     }
 
-    function ethToWethSwap(address _address) public payable {
-        ERC20API tokenLoaded = ERC20API(_address);
-        tokenLoaded.mint.value(msg.value)(msg.sender);
+    // function withdrawEth(uint256 _wei) public {
+    //     ethBalance[msg.sender] = ethBalance[msg.sender].sub(_wei);
+    //     msg.sender.transfer(_wei);
+    // }
+
+    function swapBasicToken(address bank_address, address token_address) public payable {
+        Bank ethBank = Bank(bank_address);
+        ethBank.deposit(msg.sender, msg.value);
+        BasicToken token = BasicToken(token_address);
+        token.mint(msg.sender, msg.value);
+        
     }
 
-    function wethToEthSwap(address _address, uint256 amt) public {
-        ERC20API tokenLoaded = ERC20API(_address);
-        tokenLoaded.burn(msg.sender, amt);
+    function withdrawEth(address bank_address, address token_address, uint value) public {
+        BasicToken token = BasicToken(token_address);
+        token.burn(msg.sender, value);
+        Bank ethBank = Bank(bank_address);
+        ethBank.withdraw(value);
+        
     }
 
     // modifier ethRequiredCheck(uint256 _price, uint256 _amount) {

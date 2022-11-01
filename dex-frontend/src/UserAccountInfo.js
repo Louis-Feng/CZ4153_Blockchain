@@ -1,7 +1,7 @@
 import logo from "./logo.svg";
 import "./App.css";
 import React, { Component } from "react";
-
+import {Link} from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.css";
 import Badge from "./components/tokenbadge";
 
@@ -70,24 +70,10 @@ class UserAccountInfo extends Component {
       }
     }
 
-    // if (this.props.tokenA) {
-    //   let tokenA_balance = await this.props.tokenA.methods
-    //     .balanceOf(this.props.userAddress)
-    //     .call();
-    //   this.setState((prevState) => ({
-    //     userWallet: {
-    //       ...prevState.userWallet,
-    //       tokenA_balance: tokenA_balance,
-    //     },
-    //   }));
-    //   console.log("tokenA balence")
-    //   console.log(this.state.userWallet.tokenA_balance)
-    // } else {
-    //   window.alert("TokenA contract not deployed to detected network");
-    // }
-
     if (this.props.dex) {
       let web3 = this.props.web3;
+      console.log(this.props.web3)
+      console.log(this.props.userAddress)
       let eth_balance = await web3.eth.getBalance(this.props.userAddress);
       this.setState((prevState) => ({
         userWallet: {
@@ -128,11 +114,11 @@ class UserAccountInfo extends Component {
       }
       tokenAndBalance.push(
         <tr>
-          <th scope="row">
-            <Badge color="dark" badgeName={temp}></Badge>
+          <th scope="row" >
+            <Badge color="dark"  badgeName={temp}></Badge>
           </th>
           <td>
-            <Badge color="info" badgeName={tokenBalance}></Badge>
+            <Badge color="info" badgeName={this.props.web3.utils.fromWei(tokenBalance)}></Badge>
           </td>
         </tr>
       );
@@ -244,13 +230,19 @@ class UserAccountInfo extends Component {
                     role="group"
                     aria-label="Vertical radio toggle button group"
                   >
-                    <button className="btn btn-outline-dark btn-lg">
+                    <Link style={{ alignSelf: 'stretch' }} to="/swapBasicToken"><div>
+                      <button className="btn btn-outline-dark btn-lg" style={{width: "100%"}}>
                       <span style={{ fontWeight: "bold" }}>Swap Token</span>
                     </button>
-                    <button className="btn btn-outline-dark btn-lg">
+                      </div></Link>
+                    
+                    <Link to="/withdrawETH"><button className="btn btn-outline-dark btn-lg" style={{width: "100%"}}>
                       <span style={{ fontWeight: "bold" }}>Withdraw Token</span>
-                    </button>
-                    <button className="btn btn-outline-dark btn-lg">
+                    </button></Link>
+                    {/* <button className="btn btn-outline-dark btn-lg">
+                      <span style={{ fontWeight: "bold" }}>Withdraw Token</span>
+                    </button> */}
+                    <button className="btn btn-outline-dark btn-lg" style={{width: "100%"}}>
                       <span style={{ fontWeight: "bold" }}>Trade Token</span>
                     </button>
                   </div>

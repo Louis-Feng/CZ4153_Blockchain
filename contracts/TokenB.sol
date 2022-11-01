@@ -10,7 +10,7 @@ contract TokenB is IERC20 {
 
     string public constant name = "Token B";
     string public constant symbol = "TB";
-    uint8 public constant decimals = 2;
+    uint8 public constant decimals = 18;
 
     mapping(address => uint256) balances;
 
@@ -18,10 +18,13 @@ contract TokenB is IERC20 {
 
     uint256 totalSupply_;
 
-    constructor(uint256 total, address owner) public {
-        totalSupply_ = total;
-        balances[owner] = totalSupply_;
-        emit Transfer(address(0), owner, total);
+    constructor(address owner) public {
+        
+        totalSupply_ = 1000000000000000000000000;
+        balances[msg.sender] = totalSupply_; // Give the issuer all initial tokens
+        // totalSupply_ = total;
+        // balances[owner] = totalSupply_;
+        emit Transfer(address(0), owner, totalSupply_);
     }
 
     function totalSupply() public view returns (uint256) {
@@ -32,13 +35,13 @@ contract TokenB is IERC20 {
         return balances[tokenOwner];
     }
 
-    function getNumToken(address tokenOwner) public view returns (uint256) {
-        uint256 numTokens = balances[tokenOwner].div(10 ** uint256(this.decimals()));
-        return numTokens;
-    }
+    // function getNumToken(address tokenOwner) public view returns (uint256) {
+    //     uint256 numTokens = balances[tokenOwner].div(10 ** uint256(this.decimals()));
+    //     return numTokens;
+    // }
 
-    function transfer(address receiver, uint numTokens) public returns (bool) {
-        uint256 value = numTokens.mul(10 ** uint256(this.decimals()));
+    function transfer(address receiver, uint value) public returns (bool) {
+        // uint256 value = numTokens.mul(10 ** uint256(this.decimals()));
         require(receiver != address(0));
         require(value <= balances[msg.sender]);
         balances[msg.sender] = balances[msg.sender].sub(value);
@@ -49,8 +52,8 @@ contract TokenB is IERC20 {
         return true;
     }
 
-    function approve(address _spender, uint numTokens) public returns (bool) {
-        uint256 value = numTokens.mul(10 ** uint256(this.decimals()));
+    function approve(address _spender, uint value) public returns (bool) {
+        // uint256 value = numTokens.mul(10 ** uint256(this.decimals()));
         allowed[_spender][msg.sender] = value;
         emit Approval(_spender ,msg.sender, value);
         return true;
@@ -60,8 +63,8 @@ contract TokenB is IERC20 {
         return allowed[owner][delegate];
     }
 
-    function transferFrom(address owner, address buyer, uint numTokens) public returns (bool) {
-        uint256 value = numTokens.mul(10 ** uint256(this.decimals()));
+    function transferFrom(address owner, address buyer, uint value) public returns (bool) {
+        // uint256 value = numTokens.mul(10 ** uint256(this.decimals()));
         require(value <= balances[owner]);
         require(value <= allowed[owner][msg.sender]);
 
