@@ -22,7 +22,7 @@ class TradeToken extends React.Component {
       amountInput: 0,
       priceInput: "0.2",
       address: "0x0",
-      is_loading: true,
+      is_loading: false,
     };
 
     this.handleAmountChange = this.handleAmountChange.bind(this);
@@ -95,7 +95,26 @@ class TradeToken extends React.Component {
     //this.updateOrders();
   };
 
+
+
   render() {
+          var content
+          if (this.state.is_loading) {
+            content = (
+              <p id="loader" className="text-center">
+                Loading...
+              </p>
+            );
+          } else {
+            content = (
+              <AllGlobalOffers
+                userAddress={this.props.userAddress}
+                token={this.props.token}
+                tokensToTrade={this.props.tokensToTrade}
+                dex={this.props.dex}
+                web3={this.props.web3}
+          />
+            );}
     return (
       <div>
         <h1>Welcome to Bank dApp</h1>
@@ -119,13 +138,7 @@ class TradeToken extends React.Component {
           onChange={this.handleTokenTypeChange}
         />{" "}
         <input type="submit" value="Submit" onClick={this.executeLimit} />
-        <AllGlobalOffers
-            userAddress={this.props.userAddress}
-            token={this.props.token}
-            tokensToTrade={this.props.tokensToTrade}
-            dex={this.props.dex}
-            web3={this.props.web3}
-          />
+        {content}
       </div>
     );
   }
