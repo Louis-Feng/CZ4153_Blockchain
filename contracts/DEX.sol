@@ -139,12 +139,12 @@ contract DEX {
                             (remainingAmount.mul(currentPrice))
                         );
                         // approve exchange to move baseToken to maker
-                        token.approve(
-                            selfToken.Book[otherType].prices[currentPrice]
-                            .offer_list[currentOffer]
-                            .offer_maker,
-                            remainingAmount.mul(1e18)
-                        );
+                        // token.approve(
+                        //     selfToken.Book[otherType].prices[currentPrice]
+                        //     .offer_list[currentOffer]
+                        //     .offer_maker,
+                        //     remainingAmount.mul(1e18)
+                        // );
                         // send weth to taker
                         token.transferFrom(
                             selfToken.Book[otherType].prices[currentPrice]
@@ -170,12 +170,12 @@ contract DEX {
                             remainingAmount.mul(1e18)
                         );
                         // approve exchange to move baseToken to maker
-                        baseToken.approve(
-                            selfToken.Book[otherType].prices[currentPrice]
-                            .offer_list[currentOffer]
-                            .offer_maker,
-                            (remainingAmount.mul(currentPrice))
-                        );
+                        // baseToken.approve(
+                        //     selfToken.Book[otherType].prices[currentPrice]
+                        //     .offer_list[currentOffer]
+                        //     .offer_maker,
+                        //     (remainingAmount.mul(currentPrice))
+                        // );
                         // send weth to taker
                         baseToken.transferFrom(
                             selfToken.Book[otherType].prices[currentPrice]
@@ -256,14 +256,14 @@ contract DEX {
                                 .offer_amount.mul(currentPrice))
                         );
                         // approve exchange to move baseToken to maker
-                        token.approve(
-                            selfToken.Book[otherType].prices[currentPrice]
-                            .offer_list[currentOffer]
-                            .offer_maker,
-                            selfToken.Book[otherType].prices[currentPrice]
-                                .offer_list[currentOffer]
-                                .offer_amount.mul(1e18)
-                        );
+                        // token.approve(
+                        //     selfToken.Book[otherType].prices[currentPrice]
+                        //     .offer_list[currentOffer]
+                        //     .offer_maker,
+                        //     selfToken.Book[otherType].prices[currentPrice]
+                        //         .offer_list[currentOffer]
+                        //         .offer_amount.mul(1e18)
+                        // );
                         // send weth to taker
                         token.transferFrom(
                             selfToken.Book[otherType].prices[currentPrice]
@@ -297,14 +297,14 @@ contract DEX {
                                 .offer_amount.mul(1e18)
                         );
                         // approve exchange to move baseToken to maker
-                        baseToken.approve(
-                            selfToken.Book[otherType].prices[currentPrice]
-                            .offer_list[currentOffer]
-                            .offer_maker,
-                            (selfToken.Book[otherType].prices[currentPrice]
-                                .offer_list[currentOffer]
-                                .offer_amount.mul(currentPrice))
-                        );
+                        // baseToken.approve(
+                        //     selfToken.Book[otherType].prices[currentPrice]
+                        //     .offer_list[currentOffer]
+                        //     .offer_maker,
+                        //     (selfToken.Book[otherType].prices[currentPrice]
+                        //         .offer_list[currentOffer]
+                        //         .offer_amount.mul(currentPrice))
+                        // );
                         // send weth to taker
                         baseToken.transferFrom(
                             selfToken.Book[otherType].prices[currentPrice]
@@ -369,7 +369,7 @@ contract DEX {
                     break;
                 }
                 currentOffer = selfToken.Book[otherType].prices[currentPrice].offer_list[currentOffer].lower_priority;
-                //这个price的order全没了
+                //no offer at this price
                 //return feedback;
             }
             currentPrice = selfToken.Book[otherType].first_price;
