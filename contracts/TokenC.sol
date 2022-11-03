@@ -57,7 +57,7 @@ contract TokenC is IERC20 {
     function approve(address _spender, uint value) public returns (bool) {
         // uint256 value = numTokens.mul(10 ** uint256(this.decimals()));
         require(
-                allowed[_spender][msg.sender].add(value) <= balances[msg.sender],
+                allowed[_spender][msg.sender].add(value) <= balances[_spender],
                 "Approve amount is greater than balance."
             );
         allowed[_spender][msg.sender] = allowed[_spender][msg.sender].add(value);
