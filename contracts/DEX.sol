@@ -921,8 +921,7 @@ contract DEX {
                                 address(this),
                                 (
                                 (
-                                orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount
-                                .mul(_price)
+                                _amount.mul(_price)
                                 )
                                 .sub(_amount.mul(currentTradePrice))
                                 )
@@ -958,7 +957,7 @@ contract DEX {
                                 (
                                     _amount.mul(currentTradePrice)
                                 )
-                                .sub(orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount
+                                .sub(_amount
                                 .mul(_price))
                                 )
                             );
