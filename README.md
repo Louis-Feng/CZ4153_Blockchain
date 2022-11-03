@@ -53,7 +53,11 @@ In this project, we are using a **central limit order book (CLOB)**. It matches 
 
 ## 4. Supported Trades
 ### 4.1 Market Order (Buy and Sell)
-
+A market order is an instruction by a user to a broker to buy or sell tokens at the best available price in the current financial market. The user will only input amount of token he wants, and the order will be executed as long as there is enough amount of orders.
 ### 4.2 Limit Order (Buy and Sell)
+The order is placed "at the limit": Limit orders set the maximum or minimum price at which you are willing to buy or sell. The user will input the price and amount of the order. For buy limit order, it will only be executed when the sell order's price is lower than the input price. For sell limit order, it will only be executed when the buy order's price is higher than the input price. 
+![Flowchart (1)](https://user-images.githubusercontent.com/61575406/199650039-4d78cdb1-b0e9-4369-ab80-f3175d5a3671.jpg)
 
 ### 4.3 Order Cancellation 
+The user can choose to cancel his order if it has not been executed yet. The lower_priority pointer of previous offer will point to the next offer while the higher_priority pointer of the next offer will point to the previous offer (linked list element removal process).
+![Flowchart (3)](https://user-images.githubusercontent.com/61575406/199650901-a7f813ae-0dde-4f46-8011-6093e6049756.jpg)
