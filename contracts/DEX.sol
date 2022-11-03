@@ -754,10 +754,12 @@ contract DEX {
         address _token,
         uint256 _price,
         uint256 _amount,
+        // bytes32 orderType
         bool _isBuy
     ) public {
 
-        Token storage currentToken = token_list[_token]; // find the desired Token object.
+        // OrderBook storage currentToken = token_list[_token]; // find the desired Token object.
+        // OrderBook storage orderBook = token_list[_token].Book[orderType];
         ERC20API basicToken = ERC20API(_basicToken);
         ERC20API desiredToken = ERC20API(_token);
 
@@ -767,40 +769,41 @@ contract DEX {
             desiredToken.approve(msg.sender, _amount.mul(1e18));
         }
 
-        if (_isBuy)
-        {   require(
-                basicToken.balanceOf(msg.sender) >= (_price.mul(_amount)),
-                "executeLimitOrder: the WETH balance < ETH required."
-            );
+        // if (_isBuy)
+        // {   require(
+        //         basicToken.balanceOf(msg.sender) >= (_price.mul(_amount)),
+        //         "executeLimitOrder: the WETH balance < ETH required."
+        //     );
 
             
-        } else {
-            require(
-                desiredToken.balanceOf(msg.sender) >= _amount.mul(1e18),
-                "executeLimitOrder: the token amount balance < amount required."
-            );
-        }
+        // } else {
+        //     require(
+        //         desiredToken.balanceOf(msg.sender) >= _amount.mul(1e18),
+        //         "executeLimitOrder: the token amount balance < amount required."
+        //     );
+        // }
 
         bytes32 orderType;
 
         if (_isBuy) orderType = "sell";
         else orderType = "buy";
-        //OrderBook storage orderBook = (_isBuy ? currentToken.Book["sell"]:currentToken.Book["buy"]);
+        OrderBook storage orderBook = token_list[_token].Book[orderType];
+        //OrderBook storage orderBook = (_isBuy ? token_list[_token].Book["sell"]:token_list[_token].Book["buy"]);
         // choose the desired order book: buy -> sell order book; sell -> buy order book
 
         // check if the proposed order price is able to match any order price
         if (
-            (_isBuy && _price < currentToken.Book[orderType].first_price) || // buy order price smaller than minimum sell price
-            (!_isBuy && _price > currentToken.Book[orderType].first_price) || // sell order price higher than maximum buy price
-            currentToken.Book[orderType].number_of_prices == 0 // there is no order to match.
+            (_isBuy && _price < orderBook.first_price) || // buy order price smaller than minimum sell price
+            (!_isBuy && _price > orderBook.first_price) || // sell order price higher than maximum buy price
+            orderBook.number_of_prices == 0 // there is no order to match.
         ) {
             storeOrder(_token, !_isBuy, _price, _amount, msg.sender); // store the order and delay its execution
             //emit OrderStored(msg.sender, _token, _price, _amount, _isBuy);
         } else {
 
-            uint256 totalEtherToTrade = 0;
+            // uint256 totalEtherToTrade = 0;
             uint256 amountLeftToTrade = _amount;
-            uint256 currentTradePrice = currentToken.Book[orderType].first_price;
+            uint256 currentTradePrice = orderBook.first_price;
             uint256 offerPtr;
 
             while (currentTradePrice != 0 && amountLeftToTrade > 0) {
@@ -809,21 +812,21 @@ contract DEX {
                     //emit OrderStored(msg.sender, _token, _price, _amount, _isBuy);
                     break;
                 }
-                offerPtr = currentToken.Book[orderType].prices[currentTradePrice].highest_priority;
+                offerPtr = orderBook.prices[currentTradePrice].highest_priority;
                 // initiate the helper offer pointer to traverse the price node.
                 //emit OfferPtrUpdated(offerPtr);
-                while (offerPtr <= currentToken.Book[orderType].prices[currentTradePrice].lowest_priority
+                while (offerPtr <= orderBook.prices[currentTradePrice].lowest_priority
                     && amountLeftToTrade > 0) {
-                    //emit OfferAmountLessThanTradeAmount(currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount <= amountLeftToTrade);
-                    if (currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount <= amountLeftToTrade) {
+                    //emit OfferAmountLessThanTradeAmount(orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount <= amountLeftToTrade);
+                    if (orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount <= amountLeftToTrade) {
 
-                        totalEtherToTrade = (currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount).mul(currentTradePrice);
+                        // totalEtherToTrade = (orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount).mul(currentTradePrice);
                         //this offer cannot fulfill the amount
 
                         if (_isBuy)
                         {
                             require(
-                                basicToken.balanceOf(msg.sender) >= totalEtherToTrade,
+                                basicToken.balanceOf(msg.sender) >= (orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount).mul(currentTradePrice),
                                 "executeLimitOrder: insufficient ether balance."
                             );
                             // approve exchange to move token to maker
@@ -831,129 +834,176 @@ contract DEX {
 
                             basicToken.transferFrom(
                                 msg.sender,
-                                currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker,
-                                totalEtherToTrade
+                                orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_maker,
+                                (orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount).mul(currentTradePrice)
+                            );
+                            basicToken.reduceAllowance(
+                                msg.sender,
+                                address(this),
+                                (
+                                (
+                                orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount
+                                .mul(_price)
+                                )
+                                .sub((orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount).mul(currentTradePrice))
+                                )
                             );
 
-                            //desiredToken.approve(currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker, currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount.mul(1e18));
+                            //desiredToken.approve(orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_maker, orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount.mul(1e18));
 
                             desiredToken.transferFrom(
-                                currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker,
+                                orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_maker,
                                 msg.sender,
-                                currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount.mul(1e18)
+                                orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount.mul(1e18)
                             );
                         } else {
                             require(
-                                basicToken.balanceOf(currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker) >= totalEtherToTrade,
+                                basicToken.balanceOf(orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_maker) >= (orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount).mul(currentTradePrice),
                                 "executeLimitOrder: insufficient ether balance."
                             );
                             // approve exchange to move token to maker
-                            //basicToken.approve(currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker, totalEtherToTrade);
+                            //basicToken.approve(orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_maker, (orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount).mul(currentTradePrice));
 
                             basicToken.transferFrom(
-                                currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker,
+                                orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_maker,
                                 msg.sender,
-                                totalEtherToTrade
+                                (orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount).mul(currentTradePrice)
                             );
 
-                            //desiredToken.approve(msg.sender, currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount.mul(1e18));
+                            basicToken.reduceAllowance(
+                                orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_maker,
+                                address(this),
+                                (
+                                (
+                                (orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount).mul(currentTradePrice)
+                                )
+                                .sub(orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount
+                                .mul(_price))
+                                )
+                            );
+
+                            //desiredToken.approve(msg.sender, orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount.mul(1e18));
 
                             desiredToken.transferFrom(
                                 msg.sender,
-                                currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker,
-                                currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount.mul(1e18)
+                                orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_maker,
+                                orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount.mul(1e18)
                             );
                         }
 
-                        amountLeftToTrade = amountLeftToTrade.sub(currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount);
-                        currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount = 0;
-                        currentToken.Book[orderType].prices[currentTradePrice].offer_length = currentToken.Book[orderType].prices[currentTradePrice].offer_length.sub(1);
-                        currentToken.Book[orderType].prices[currentTradePrice].highest_priority = currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].lower_priority;
+                        amountLeftToTrade = amountLeftToTrade.sub(orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount);
+                        orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount = 0;
+                        orderBook.prices[currentTradePrice].offer_length = orderBook.prices[currentTradePrice].offer_length.sub(1);
+                        orderBook.prices[currentTradePrice].highest_priority = orderBook.prices[currentTradePrice].offer_list[offerPtr].lower_priority;
                     }
                     else {
                         //this offer can fulfill the amount
-                        totalEtherToTrade = amountLeftToTrade.mul(currentTradePrice);
+                        // totalEtherToTrade = amountLeftToTrade.mul(currentTradePrice);
 
                         if (_isBuy) {
 
                             // approve exchange to move token to maker
 
                             require(
-                                basicToken.balanceOf(msg.sender) >= totalEtherToTrade,
+                                basicToken.balanceOf(msg.sender) >= amountLeftToTrade.mul(currentTradePrice),
                                 "executeLimitOrder: insufficient ether balance."
                             );
 
-                            //basicToken.approve(msg.sender, totalEtherToTrade);
+                            //basicToken.approve(msg.sender, amountLeftToTrade.mul(currentTradePrice));
 
                             basicToken.transferFrom(
                                 msg.sender,
-                                currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker,
-                                totalEtherToTrade
+                                orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_maker,
+                                amountLeftToTrade.mul(currentTradePrice)
+                            );
+                            basicToken.reduceAllowance(
+                                msg.sender,
+                                address(this),
+                                (
+                                (
+                                orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount
+                                .mul(_price)
+                                )
+                                .sub(amountLeftToTrade.mul(currentTradePrice))
+                                )
                             );
 
-                            //desiredToken.approve(currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker, amountLeftToTrade.mul(1e18));
+
+                            //desiredToken.approve(orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_maker, amountLeftToTrade.mul(1e18));
 
                             desiredToken.transferFrom(
-                                currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker,
+                                orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_maker,
                                 msg.sender,
                                 amountLeftToTrade.mul(1e18)
                             );
                         } else {
 
                             require(
-                                basicToken.balanceOf(currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker) >= totalEtherToTrade,
+                                basicToken.balanceOf(orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_maker) >= amountLeftToTrade.mul(currentTradePrice),
                                 "executeLimitOrder: insufficient ether balance."
                             );
 
-                            //basicToken.approve(currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker, totalEtherToTrade);
+                            //basicToken.approve(orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_maker, amountLeftToTrade.mul(currentTradePrice));
 
                             basicToken.transferFrom(
-                                currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker,
+                                orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_maker,
                                 msg.sender,
-                                totalEtherToTrade
+                                amountLeftToTrade.mul(currentTradePrice)
+                            );
+
+                            basicToken.reduceAllowance(
+                                orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_maker,
+                                address(this),
+                                (
+                                (
+                                    amountLeftToTrade.mul(currentTradePrice)
+                                )
+                                .sub(orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount
+                                .mul(_price))
+                                )
                             );
 
                             //desiredToken.approve(msg.sender, amountLeftToTrade.mul(1e18));
 
                             desiredToken.transferFrom(
                                 msg.sender,
-                                currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker,
+                                orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_maker,
                                 amountLeftToTrade.mul(1e18)
                             );
                         }
 
-                        currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount =
-                        currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount.sub(amountLeftToTrade);
+                        orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount =
+                        orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount.sub(amountLeftToTrade);
                         amountLeftToTrade = 0;
                     }
 
-                    if (offerPtr == currentToken.Book[orderType].prices[currentTradePrice].lowest_priority &&
-                        currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount == 0
+                    if (offerPtr == orderBook.prices[currentTradePrice].lowest_priority &&
+                        orderBook.prices[currentTradePrice].offer_list[offerPtr].offer_amount == 0
                     ) {
                         //if this price has no offer left, remove it from order book
-                        currentToken.Book[orderType].number_of_prices = currentToken.Book[orderType].number_of_prices.sub(1);
-                        currentToken.Book[orderType].prices[currentTradePrice].offer_length = 0;
+                        orderBook.number_of_prices = orderBook.number_of_prices.sub(1);
+                        orderBook.prices[currentTradePrice].offer_length = 0;
 
                         if (
-                            currentTradePrice == currentToken.Book[orderType].prices[currentTradePrice].next_price ||
-                            currentToken.Book[orderType].prices[currentTradePrice].next_price == 0
+                            currentTradePrice == orderBook.prices[currentTradePrice].next_price ||
+                            orderBook.prices[currentTradePrice].next_price == 0
                         ) {
                             //this price is the only price in the order book
-                            currentToken.Book[orderType].prices[currentTradePrice].next_price = 0;
-                            currentToken.Book[orderType].number_of_prices = 0;
-                            currentToken.Book[orderType].first_price = 0;
-                            currentToken.Book[orderType].last_price = 0;
+                            orderBook.prices[currentTradePrice].next_price = 0;
+                            orderBook.number_of_prices = 0;
+                            orderBook.first_price = 0;
+                            orderBook.last_price = 0;
                         } else {
-                            currentToken.Book[orderType].first_price = currentToken.Book[orderType].prices[currentTradePrice].next_price;
+                            orderBook.first_price = orderBook.prices[currentTradePrice].next_price;
                         }
                         break;
                     }
-                    if (offerPtr == currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].lower_priority)
+                    if (offerPtr == orderBook.prices[currentTradePrice].offer_list[offerPtr].lower_priority)
                         break;
                     else
-                        offerPtr = currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].lower_priority;
+                        offerPtr = orderBook.prices[currentTradePrice].offer_list[offerPtr].lower_priority;
                 }
-                currentTradePrice = currentToken.Book[orderType].first_price;
+                currentTradePrice = orderBook.first_price;
                 if (currentTradePrice == 0 && amountLeftToTrade != 0) {
                     storeOrder(_token, !_isBuy, _price, amountLeftToTrade, msg.sender);
                     //emit OrderStored(msg.sender, _token, _price, _amount, _isBuy);
