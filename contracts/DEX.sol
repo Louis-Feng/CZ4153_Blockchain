@@ -85,8 +85,8 @@ contract DEX {
         emit loguint256("Current price: ",currentPrice);
 
         //IERC20 baseToken = ERC20API(_baseTokenAddress);
-        IERC20 token = IERC20(_tokenAddress);
-        IERC20 baseToken = IERC20(_baseToken);
+        ERC20API token = ERC20API(_tokenAddress);
+        ERC20API baseToken = ERC20API(_baseToken);
 
         //No offer for this token
         if(selfToken.Book[otherType].number_of_prices == 0){
@@ -476,6 +476,9 @@ contract DEX {
         }
         OrderBook storage orderBook = token_list[_token].Book[book_name];
 
+        ERC20API token = ERC20API(_token);
+        ERC20API baseToken = ERC20API(_baseToken);
+
         //This function assume this is a valid price
         // remove all offer_list for this price
 
@@ -486,6 +489,23 @@ contract DEX {
                 msg.sender && counter == _priority
 
             ) {
+                if (!is_sell) {
+                     baseToken.reduceAllowance(
+                         msg.sender,
+                         address(this),
+                         (
+                         orderBook.prices[_price].offer_list[counter]
+                         .offer_amount
+                         .mul(_price)
+                         )
+                     );
+                 } else {
+                     token.reduceAllowance(
+                         msg.sender,
+                         address(this),
+                         orderBook.prices[_price].offer_list[counter].offer_amount.mul(1e18)
+                     );
+                 }
 
                 orderBook.prices[_price].offer_length = orderBook.prices[_price]
                 .offer_length
@@ -738,11 +758,14 @@ contract DEX {
     ) public {
 
         Token storage currentToken = token_list[_token]; // find the desired Token object.
-        IERC20 basicToken = IERC20(_basicToken);
-        IERC20 desiredToken = IERC20(_token);
+        ERC20API basicToken = ERC20API(_basicToken);
+        ERC20API desiredToken = ERC20API(_token);
 
-        basicToken.approve(msg.sender, _price.mul(_amount));
-        desiredToken.approve(msg.sender, _amount.mul(1e18));
+        if (_isBuy) {
+            basicToken.approve(msg.sender, _price.mul(_amount));
+        } else{
+            desiredToken.approve(msg.sender, _amount.mul(1e18));
+        }
 
         if (_isBuy)
         {   require(
@@ -943,7 +966,7 @@ contract DEX {
 
 
     function getTokenBalance(address user, address _tokenAddress) public view returns(uint256) {
-        IERC20 tokenLoaded = IERC20(_tokenAddress);
+        ERC20API tokenLoaded = ERC20API(_tokenAddress);
         return tokenLoaded.balanceOf(user);
     }
 

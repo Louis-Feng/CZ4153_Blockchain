@@ -7,6 +7,8 @@ contract TokenA is IERC20 {
     using SafeMath for uint256;
     event Transfer(address indexed from, address indexed to, uint tokens);
     event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
+    event Removal(address indexed tokenOwner, address indexed spender, uint tokens);
+
 
     string public constant name = "Token A";
     string public constant symbol = "TA";
@@ -66,6 +68,16 @@ contract TokenA is IERC20 {
     function allowance(address owner, address delegate) public view returns (uint) {
         return allowed[owner][delegate];
     }
+
+    function reduceAllowance(
+         address _owner,
+         address _spender,
+         uint256 _value
+     ) public returns (uint256 currentAllowance) {
+         allowed[_owner][_spender] = allowed[_owner][_spender].sub(_value);
+         emit Removal(_owner, _spender, _value);
+         return allowed[_owner][_spender];
+     }
 
     function transferFrom(address owner, address buyer, uint value) public returns (bool) {
         // uint256 value = numTokens.mul(10 ** uint256(this.decimals()));
