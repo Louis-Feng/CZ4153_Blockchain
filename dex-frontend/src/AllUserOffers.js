@@ -35,10 +35,10 @@ class AllUserOffers extends Component{
             <div className="card-body">
             <Row className="mb-4">
               <Col>
-                <b>Sell Book</b>
+                <b>Buy Book</b>
               </Col>
               <Col>
-                <b>Buy Book</b>
+                <b>Sell Book</b>
               </Col>
             </Row>
             <Row>
@@ -52,7 +52,7 @@ class AllUserOffers extends Component{
                 tokenToTrade={this.props.tokensToTrade[key]}
                 dex={this.props.dex}
                 tokenName={key}
-                is_sell={true}
+                is_sell={false}
               />
                   </div>
                 </div>
@@ -67,7 +67,7 @@ class AllUserOffers extends Component{
                 tokenToTrade={this.props.tokensToTrade[key]}
                 dex={this.props.dex}
                 tokenName={key}
-                is_sell={false}
+                is_sell={true}
               />
                   </div>
                 </div>

@@ -475,26 +475,12 @@ contract DEX {
             book_name = "sell";
         }
         OrderBook storage orderBook = token_list[_token].Book[book_name];
-//        uint256 totalOffers = 0;
-//        ERC20API token = ERC20API(_token);
-//        ERC20API baseToken = ERC20API(_baseToken);
+
         //This function assume this is a valid price
         // remove all offer_list for this price
-        uint256 counter = orderBook.first_price;
-        bool found = false;
-        if (orderBook.first_price == _price ) found = true;
-        while (counter != orderBook.last_price && !found) {
-            counter = orderBook.prices[counter].next_price;
-            if (counter == _price) {
-                found = true;
-                break;
-            }
-        }
-        if (found) {
-            emit logString("found");
-        }
-        counter = orderBook.prices[_price].highest_priority;
-        while (counter <= orderBook.prices[_price].lowest_priority && found) {
+
+        uint256 counter = orderBook.prices[_price].highest_priority;
+        while (counter <= orderBook.prices[_price].lowest_priority ) {
             if (
                 orderBook.prices[_price].offer_list[counter].offer_maker ==
                 msg.sender && counter == _priority
@@ -512,8 +498,6 @@ contract DEX {
                     orderBook.prices[_price].offer_length = 0;
 
                 } else if (
-//                    orderBook.prices[_price].offer_list[counter]
-//                    .higher_priority == 0
                     counter == orderBook.prices[_price].highest_priority ||
                     orderBook.prices[_price].offer_list[counter].higher_priority == 0
                 ) {
@@ -527,9 +511,6 @@ contract DEX {
                     .lower_priority]
                     .higher_priority = 0;
                 } else if (
-//                    orderBook.prices[_price].offer_list[counter]
-//                    .lower_priority ==
-//                    orderBook.prices[_price].lowest_priority
                         counter == orderBook.prices[_price].lowest_priority
                 ) {
                     // if this offer is the last in queue
@@ -569,7 +550,7 @@ contract DEX {
 
         // If offer list is empty, remove the price from price list
         if (
-            orderBook.prices[_price].offer_length == 0 && found
+            orderBook.prices[_price].offer_length == 0
 //            orderBook.prices[_price].offer_length == 0 && totalOffers > 0
         ) {
             if (
@@ -611,30 +592,7 @@ contract DEX {
                 orderBook.prices[_price].highest_priority = 0;
                 orderBook.prices[_price].lowest_priority = 0;
                 orderBook.prices[_price].next_price = 0;
-                // if we are in between order book list
-//                uint256 previousPrice = orderBook.first_price;
-//                while (orderBook.prices[previousPrice].next_price != orderBook.last_price) {
-//                    previousPrice = orderBook.prices[previousPrice].next_price;
-//                    if (orderBook.prices[previousPrice].next_price == _price) break;
-//                }
-//                if (_price == orderBook.last_price) {
-//                    // if this is the last price in order book list
-//                    orderBook.prices[previousPrice].next_price = previousPrice;
-//                    orderBook.last_price = previousPrice;
-//                    orderBook.number_of_prices = orderBook
-//                    .number_of_prices
-//                    .sub(1);
-//                } else if (orderBook.prices[previousPrice].next_price != orderBook.last_price){
-//                    // if we are in between order book list
-//                    orderBook.prices[previousPrice].next_price
-//                    = orderBook.prices[_price].next_price;
-//                    orderBook.number_of_prices = orderBook
-//                    .number_of_prices
-//                    .sub(1);
-//                }
-//                orderBook.number_of_prices = orderBook
-//                .number_of_prices
-//                .sub(1);
+               
             }
         }
     }
@@ -1023,10 +981,6 @@ contract DEX {
         return (len, highest_p, lowest_p, next_price);
     }
 
-    // function withdrawEth(uint256 _wei) public {
-    //     ethBalance[msg.sender] = ethBalance[msg.sender].sub(_wei);
-    //     msg.sender.transfer(_wei);
-    // }
 
     function swapBasicToken(address bank_address, address token_address) public payable {
         Bank ethBank = Bank(bank_address);
@@ -1043,26 +997,7 @@ contract DEX {
         
     }
 
-    // function withdrawEth(address bank_address, address token_address, uint value) public {
-    //     BasicToken token = BasicToken(token_address);
-    //     token.burn(msg.sender, value);
-    //     Bank ethBank = Bank(bank_address);
-    //     ethBank.withdraw(value);
-        
-    // }
 
-    // modifier ethRequiredCheck(uint256 _price, uint256 _amount) {
-    //     uint256 ethRequired = _price.mul(_amount);
-    //     require(
-    //         ethRequired >= _amount,
-    //         "buy/sell TokenLimit: Eth required is < than amount"
-    //     );
-    //     require(
-    //         ethRequired >= _price,
-    //         "buy/sell TokenLimit: Eth required is < than price"
-    //     );
-    //     _;
-    // }
 
     event logBytes32(bytes32 _type);
     event loguint256(string logMessage, uint256 message);
