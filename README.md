@@ -3,7 +3,7 @@
 
 ## 1. Deployment
 ### 1.1Requirements
-- Truffle v5.6.1 (core: 5.6.1)<img width="314" alt="Screenshot 2022-11-03 at 11 43 19 AM" src="https://user-images.githubusercontent.com/61575406/199643674-fa1317a2-5520-45aa-a40a-1b70879cb516.png">
+- Truffle v5.6.1 (core: 5.6.1)
 
 - Ganache v7.4.4
 - Solidity - 0.5.16 (solc-js)
@@ -40,4 +40,20 @@ The Ganache accounts[0] will be the issuer of Token A, B and C in the Ganache ne
 ### 2.3 Users
 The users can be other accounts in the Ganache network. The user can use their BasicToken to buy Token A, B or C from the issuer or other users. The users can sell thier token at hand to other users subsequently.
 
-## 3. Overall Architecture
+## 3. Order book
+In this project, we are using a **central limit order book (CLOB)**. It matches customer orders (e.g. bids and offers) on a 'price time priority' basis.
+- A token list will be used to store all supported tokens. Each token will have a buy order book and sell order book
+- The sell order book stores prices in ascending order, i.e.  first_price = lowest price and last_price = highest price
+- The buy order book stores prices in descending order, i.e.  first_price = highest price and last_price = lowest price
+- At each price, the orders are stored using a self-defined double linked list for easy insertion and deletion.
+- When an order is matched and fully executed, the order pointer will point to the next order at this price (inserted after current order)
+- When orders at certain price runs out, the price pointer will point to the next price
+- Orders at the same price are stored on a First-In-First-Out basis. Therefore, the priority is based on order price and order age
+![Flowchart](https://user-images.githubusercontent.com/61575406/199647068-26c41cdb-c9bc-434d-a776-6f12db67e3c9.jpg)
+
+## 4. Supported Trades
+### 4.1 Market Order (Buy and Sell)
+
+### 4.2 Limit Order (Buy and Sell)
+
+### 4.3 Order Cancellation 
