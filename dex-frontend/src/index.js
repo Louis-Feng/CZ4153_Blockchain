@@ -1,27 +1,27 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
+import React from "react";
+import ReactDOM from "react-dom/client";
 import { BrowserRouter, Router, Routes, Route, Link } from "react-router-dom";
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import TradeToken from "./TradeToken";
-import AllUserOffers from "./AllUserOffers"
+import "./index.css";
+import App from "./App";
+// import Swap from './SwapBasicToken';
+import reportWebVitals from "./reportWebVitals";
+// import TradeToken from "./TradeToken";
+// import AllUserOffers from "./AllUserOffers"
+import "react-router-dom";
+import TabPage from "./components/tabpage";
+import AllUserOffers from "./AllUserOffers";
 
-
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
+    <App />
+    {/* <BrowserRouter>
       <Routes>
         <Route path="/" element={<App/>} />
-        {/* <Route path="/submitOffer" component={<TradeToken/>} /> */}
-        {/* <Route path="/service" component={Service} /> */}
+        <Route path="/swapBasicToken" component={<Swap/>} />
+         <Route path="/service" component={Service} />
        </Routes>
-    </BrowserRouter>
-      
-
-    
-
+    </BrowserRouter> */}
   </React.StrictMode>
 );
 
