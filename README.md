@@ -2,7 +2,7 @@
 
 
 ## 1. Deployment
-### 1.1Requirements
+### 1.1 Requirements
 - Truffle v5.6.1 (core: 5.6.1)
 
 - Ganache v7.4.4
