@@ -6,6 +6,8 @@ import { Button, Table } from "react-bootstrap";
 // import {Row} from "react-bootstrap";
 // import Table from "react-bootstrap/Table";
 import "bootstrap/dist/css/bootstrap.css";
+import Badge from "react-bootstrap/Badge";
+import Alert from "react-bootstrap/Alert";
 
 class UserOffers extends Component {
   constructor(props) {
@@ -40,10 +42,9 @@ class UserOffers extends Component {
   removeElementsWithZeroValue(arr) {
     var array = [];
     for (var i = 0; i < Object.keys(arr).length; i++) {
-      array[i] = arr[i]
-        .filter(function (value, index, arr) {
-          return value !== "0";
-        });
+      array[i] = arr[i].filter(function (value, index, arr) {
+        return value !== "0";
+      });
     }
     return array;
   }
@@ -88,16 +89,23 @@ class UserOffers extends Component {
 
   renderOrder() {
     return this.state.ordersPrices.map((p, index) => {
-        const price = this.props.web3.utils.fromWei(p, "Ether");
-        // const amount = web3.utils.fromWei(this.state.ordersVolumes[index], "Ether");
+      const price = this.props.web3.utils.fromWei(p, "Ether");
+      // const amount = web3.utils.fromWei(this.state.ordersVolumes[index], "Ether");
       return (
         <>
           <tr>
-            <td>{this.props.tokenName.toUpperCase()}</td>
-            <td>{price}</td>
-            <td>{this.state.ordersVolumes[index]}</td>
+            <td>
+              <Badge bg="dark">{this.props.tokenName.toUpperCase()}</Badge>
+            </td>
+            <td>
+              <Badge bg="info">{price}</Badge>
+            </td>
+            <td>
+              <Badge bg="info">{this.state.ordersVolumes[index]}</Badge>
+            </td>
             <td>
               <Button
+                variant="outline-dark"
                 size="sm"
                 onClick={() => {
                   this.cancelOrder(p, this.state.ordersPriorities[index]);
@@ -121,7 +129,13 @@ class UserOffers extends Component {
         </p>
       );
     } else if (this.state.ordersPrices.length === 0) {
-      content = <p style={{ color: 'black' }}>Current Order Book is Empty</p>;
+      content = (
+        <Alert className="text-black" key="dark" variant="dark">
+          <h6>
+            <b>No order submitted.</b>
+          </h6>
+        </Alert>
+      );
     } else {
       content = (
         <>

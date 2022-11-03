@@ -1,9 +1,11 @@
 import logo from "./logo.svg";
-import "./App.css";
+//import "./App.css";
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.css";
 import Badge from "./components/tokenbadge";
+import { Col } from "react-bootstrap";
+import { Row } from "react-bootstrap";
 
 class UserAccountInfo extends Component {
   constructor(props) {
@@ -132,28 +134,29 @@ class UserAccountInfo extends Component {
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      height: "90vh",
+      width: "120vh",
+      //height: "90vh",
     };
     const cardStyle = {
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      width: "100vh",
-      height: "60vh",
+      //width: "120vh",
+      //height: "60vh",
     };
     const cardBodyStyle = {
-      width: "100vh",
-      height: "60vh",
+      //width: "120vh",
+      //height: "60vh",
     };
 
     const balanceTableContainerStyle = {
-      width: "90vh",
-      height: "50vh",
+      width: "120vh",
+      //height: "50vh",
     };
 
     const balanceTableStyle = {
-      width: "40vh",
-      height: "40vh",
+      width: "50vh",
+      //height: "40vh",
     };
 
     let content;
@@ -168,69 +171,42 @@ class UserAccountInfo extends Component {
         <React.Fragment>
           <div className="d-flex flex-column" style={containerStyle}>
             <div
-              className="card text-bg-light mx-auto my-auto"
+              className="card text-bg-light mx-auto my-auto border-0"
               style={cardStyle}
             >
               <div className="card-body" style={cardBodyStyle}>
-                <h3 className="pt-3 card-title" style={{ paddingLeft: 10 }}>
+                <h3 className="pt-5 card-title">
                   <span style={{ fontWeight: "bold" }}>User Profile</span>
                 </h3>
                 <div
-                  className="d-flex flex-row"
+                  className="pt-5 d-flex flex-row"
                   style={balanceTableContainerStyle}
                 >
-                  <table
-                    className="mx-auto my-auto table"
-                    style={balanceTableStyle}
-                  >
+                  <table className="table" style={balanceTableStyle}>
                     <thead>
                       <tr>
-                        <th scope="col">Token</th>
-                        <th scope="col">Current Balance</th>
+                        <th scope="col" style={{ fontSize: 20 }}>
+                          Token
+                        </th>
+                        <th scope="col" style={{ fontSize: 20 }}>
+                          Token Balance
+                        </th>
                       </tr>
                     </thead>
-                    {/* <tbody> */}
-                    {/* <tr>
-                        <th scope="row">
-                          <Badge color="dark" badgeName="ETH"></Badge>
-                        </th>
-                        <td>
-                          <Badge color="info" badgeName={100}></Badge>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th scope="row">
-                          <Badge color="dark" badgeName="TokenA"></Badge>
-                        </th>
-                        <td>
-                          <Badge color="info" badgeName={100}></Badge>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th scope="row">
-                          <Badge color="dark" badgeName="TokenB"></Badge>
-                        </th>
-                        <td>
-                          <Badge color="info" badgeName={100}></Badge>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th scope="row">
-                          <Badge color="dark" badgeName="TokenC"></Badge>
-                        </th>
-                        <td>
-                          <Badge color="info" badgeName={100}></Badge>
-                        </td>
-                      </tr> */}
                     {this.tokensandBalances()}
-                    {/* </tbody> */}
                   </table>
                   <div
                     className="btn-group-vertical mx-auto my-auto"
                     role="group"
                     aria-label="Vertical radio toggle button group"
                   >
-                    <Link style={{ alignSelf: "stretch" }} to={{pathname: "/swapBasicToken", state: { dataPassed: "This is the passed data." }}}>
+                    <Link
+                      style={{ alignSelf: "stretch" }}
+                      to={{
+                        pathname: "/swapBasicToken",
+                        state: { dataPassed: "This is the passed data." },
+                      }}
+                    >
                       <div>
                         <button
                           className="btn btn-outline-dark btn-lg"

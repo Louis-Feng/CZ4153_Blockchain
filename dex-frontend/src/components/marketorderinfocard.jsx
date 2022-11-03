@@ -59,9 +59,9 @@ class MarketOrderInfoCard extends Component {
   render() {
     const cardStyle = {
       width: "50vh",
-      height: "30vh",
+      //height: "30vh",
     };
-    const formClasses = "mb-6";
+    const formClasses = "mb-1";
     const submitButtonStyles = {
       float: "right",
     };
@@ -76,6 +76,7 @@ class MarketOrderInfoCard extends Component {
                 </Badge>
               </h3>
             </Card.Title>
+
             <Form>
               <Form.Group
                 className={formClasses}
@@ -83,6 +84,7 @@ class MarketOrderInfoCard extends Component {
               >
                 <Form.Label>Amount</Form.Label>
                 <Form.Control
+                  className="pt-2"
                   type="number"
                   //onKeyDown={(evt) => evt.key === "e" && evt.preventDefault()}
                   placeholder="Enter Amount"
@@ -94,7 +96,7 @@ class MarketOrderInfoCard extends Component {
                 </Form.Text>
               </Form.Group>
               <Button
-                className="text-white"
+                className="text-white pt-2"
                 style={submitButtonStyles}
                 variant="info"
                 type="submit"

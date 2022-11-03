@@ -7,6 +7,8 @@ import { Row, Col } from "react-bootstrap";
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownMenu from "react-bootstrap/esm/DropdownMenu";
 import LimitOrderInfoCardContainer from "./limitorderinfocardcontainer";
+import Badge from "react-bootstrap/Badge";
+import Alert from "react-bootstrap/Alert";
 
 class TabPage extends Component {
   state = {
@@ -23,9 +25,13 @@ class TabPage extends Component {
   // }
 
   getPrompts(isMarket) {
-    const prefix = "select token - ";
-    const debug = isMarket ? prefix + "Market Tokens" : prefix + "Limit Tokens";
-    return debug;
+    const prefix = "please select token for the ";
+    const debug = isMarket ? prefix + "market order:" : prefix + "limit order:";
+    return (
+      <Badge pill bg="info" style={{ fontSize: 20 }}>
+        {debug}
+      </Badge>
+    );
   }
 
   render() {
@@ -39,12 +45,15 @@ class TabPage extends Component {
       justifyContent: "center",
       alignItems: "center",
     };
+    const widthStyle = {
+      width: "130vh",
+    };
     let content;
     if (this.state.is_loading) {
       content = (
-        <p id="loader" className="text-center">
-          Loading...
-        </p>
+        <Alert className="text-black" key="warning" variant="warning">
+          <b>LOADING...</b>
+        </Alert>
       );
       return (
         <React.Fragment>
@@ -61,7 +70,7 @@ class TabPage extends Component {
                     <Row>
                       <Col>&nbsp;&nbsp;</Col>
                     </Row>
-                    <div style={centerStyles}>please {this.getPrompts()}</div>
+                    <div style={centerStyles}> {this.getPrompts()}</div>
                     <Row>
                       <Col>&nbsp;&nbsp;</Col>
                     </Row>
@@ -118,13 +127,16 @@ class TabPage extends Component {
                         </Dropdown.Item>
                       </DropdownMenu>
                     </Dropdown>
+                    <Row>
+                      <Col>&nbsp;&nbsp;</Col>
+                    </Row>
                     <div>{content}</div>
                   </TabPage>
                   <TabPage eventKey="limit" title="Limit Order">
                     <Row>
                       <Col>&nbsp;&nbsp;</Col>
                     </Row>
-                    <div style={centerStyles}>please {this.getPrompts()}</div>
+                    <div style={centerStyles}>{this.getPrompts()}</div>
                     <Row>
                       <Col>&nbsp;&nbsp;</Col>
                     </Row>
@@ -181,6 +193,9 @@ class TabPage extends Component {
                         </Dropdown.Item>
                       </DropdownMenu>
                     </Dropdown>
+                    <Row>
+                      <Col>&nbsp;&nbsp;</Col>
+                    </Row>
                     <div>{content}</div>
                   </TabPage>
                 </Tabs>
@@ -211,9 +226,7 @@ class TabPage extends Component {
                     <Row>
                       <Col>&nbsp;&nbsp;</Col>
                     </Row>
-                    <div style={centerStyles}>
-                      please {this.getPrompts(true)}
-                    </div>
+                    <div style={centerStyles}>{this.getPrompts(true)}</div>
                     <Row>
                       <Col>&nbsp;&nbsp;</Col>
                     </Row>
@@ -270,11 +283,17 @@ class TabPage extends Component {
                         </Dropdown.Item>
                       </DropdownMenu>
                     </Dropdown>
-                    <div>
+                    <Row>
+                      <Col>&nbsp;&nbsp;</Col>
+                    </Row>
+                    <Row>
+                      <Col>&nbsp;&nbsp;</Col>
+                    </Row>
+                    <div className="mb-3">
                       <MarketOrderInfoCardContainer
                         tokenToTrade={this.state.tokenToTrade}
-                        executeLimit = {this.props.executeLimit}
-                        executeMarket = {this.props.executeMarket}
+                        executeLimit={this.props.executeLimit}
+                        executeMarket={this.props.executeMarket}
                       ></MarketOrderInfoCardContainer>
                     </div>
                   </TabPage>
@@ -288,9 +307,10 @@ class TabPage extends Component {
                     <Row>
                       <Col>&nbsp;&nbsp;</Col>
                     </Row>
-                    <div style={centerStyles}>
-                      please {this.getPrompts(false)}
-                    </div>
+                    <div style={centerStyles}>{this.getPrompts(false)}</div>
+                    <Row>
+                      <Col>&nbsp;&nbsp;</Col>
+                    </Row>
                     <Row>
                       <Col>&nbsp;&nbsp;</Col>
                     </Row>
@@ -347,11 +367,18 @@ class TabPage extends Component {
                         </Dropdown.Item>
                       </DropdownMenu>
                     </Dropdown>
-                    <div>
+                    <Row>
+                      <Col>&nbsp;&nbsp;</Col>
+                    </Row>
+                    <Row>
+                      <Col>&nbsp;&nbsp;</Col>
+                    </Row>
+
+                    <div className="mb-3" style={widthStyle}>
                       <LimitOrderInfoCardContainer
                         tokenToTrade={this.state.tokenToTrade}
-                        executeLimit = {this.props.executeLimit}
-                        executeMarket = {this.props.executeMarket}
+                        executeLimit={this.props.executeLimit}
+                        executeMarket={this.props.executeMarket}
                       ></LimitOrderInfoCardContainer>
                     </div>
                   </TabPage>

@@ -3,9 +3,9 @@ import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Badge from "react-bootstrap/Badge";
+import { Row, Col } from "react-bootstrap";
 
 class LimitOrderInfoCard extends Component {
-  
   constructor(props) {
     super(props);
     this.state = {
@@ -55,9 +55,9 @@ class LimitOrderInfoCard extends Component {
   render() {
     const cardStyle = {
       width: "50vh",
-      height: "45vh",
+      //height: "45vh",
     };
-    const formClasses = "mb-3";
+    const formClasses = "mb-1";
     const submitButtonStyles = {
       float: "right",
     };

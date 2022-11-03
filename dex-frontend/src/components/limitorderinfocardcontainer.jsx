@@ -17,7 +17,7 @@ class LimitOrderInfoCardContainer extends Component {
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-      height: "75vh",
+      //height: "75vh",
     };
 
     return (
@@ -26,14 +26,14 @@ class LimitOrderInfoCardContainer extends Component {
           <LimitOrderInfoCard
             tokenToTrade={this.state.tokenToTrade}
             orderType="Buy"
-            executeLimit = {this.props.executeLimit}
-            executeMarket = {this.props.executeMarket}
+            executeLimit={this.props.executeLimit}
+            executeMarket={this.props.executeMarket}
           ></LimitOrderInfoCard>
           <LimitOrderInfoCard
             tokenToTrade={this.state.tokenToTrade}
             orderType="Sell"
-            executeLimit = {this.props.executeLimit}
-            executeMarket = {this.props.executeMarket}
+            executeLimit={this.props.executeLimit}
+            executeMarket={this.props.executeMarket}
           ></LimitOrderInfoCard>
         </div>
       </React.Fragment>

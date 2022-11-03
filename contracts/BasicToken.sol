@@ -99,13 +99,13 @@ contract BasicToken is IERC20 {
     }
 
     function burn(address account, uint value) public returns (bool) {
-        require(balances[account]>= value, "insufficinet BasicToken");
+        require(balances[account].sub(allowed[account][msg.sender])>= value, "insufficinet BasicToken");
         // sender.transfer(value);
 
 
         balances[account] = balances[account].sub(
             value,
-            "ERC20: Burn value exceeds balance"
+            "ERC20: Burn value exceeds balance minus allowance"
         );
         totalSupply_ = totalSupply_.sub(value);
         emit Transfer(account, address(0), value);

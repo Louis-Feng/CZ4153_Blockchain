@@ -8,6 +8,8 @@ import reportWebVitals from "./reportWebVitals";
 // import TradeToken from "./TradeToken";
 // import AllUserOffers from "./AllUserOffers"
 import "react-router-dom";
+import TabPage from "./components/tabpage";
+import AllUserOffers from "./AllUserOffers";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

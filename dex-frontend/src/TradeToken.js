@@ -1,6 +1,7 @@
 import React from "react";
 import AllGlobalOffers from "./AllGlobalOffers";
 import TabPage from "./components/tabpage";
+import Alert from "react-bootstrap/Alert";
 // import {
 //   updateDeposit,
 //   newDeposit,
@@ -45,77 +46,91 @@ class TradeToken extends React.Component {
   // handleIsBuyChange = (e) => {
   //   this.setState({ isBuy: e.target.value === "buy" ? true : false });
   // };
-  executeMarket = async (amountInput,tokenName, isBuy) => {
+  executeMarket = async (amountInput, tokenName, isBuy) => {
     this.setState({ is_loading: true });
     const web3 = this.props.web3;
     var tokenToTrade;
-    console.log(tokenName.toUpperCase())
+    console.log(tokenName.toUpperCase());
     switch (tokenName.toUpperCase()) {
-      case "TOKENA" : {tokenToTrade = this.props.tokensToTrade.tokenA; break;}
-      case "TOKENB" : {tokenToTrade = this.props.tokensToTrade.tokenB; break}
-      case "TOKENC" : {tokenToTrade = this.props.tokensToTrade.tokenC; break}
+      case "TOKENA": {
+        tokenToTrade = this.props.tokensToTrade.tokenA;
+        break;
+      }
+      case "TOKENB": {
+        tokenToTrade = this.props.tokensToTrade.tokenB;
+        break;
+      }
+      case "TOKENC": {
+        tokenToTrade = this.props.tokensToTrade.tokenC;
+        break;
+      }
       // default : tokenToTrade = "";
     }
     console.log(tokenToTrade._address);
     if (tokenToTrade) {
       await this.props.dex.methods
-      .executeTokenMarket(
-        this.props.token._address,
-        tokenToTrade._address,
-        // this.props.tokensToTrade.tokenA._address,
-        amountInput,
-        isBuy
-        ? web3.utils.asciiToHex("buy")
-          : web3.utils.asciiToHex("sell")
-      )
-      .send({ from: this.props.userAddress })
-      .on("transactionHash", (hash) => {})
-      .on("error", (error) => {
-        if (error.message.includes("User denied transaction signature")) {
-          this.setState({ is_loading: false });
-        }
-      });
-    }else {
-      console.log("Invalid token")
+        .executeTokenMarket(
+          this.props.token._address,
+          tokenToTrade._address,
+          // this.props.tokensToTrade.tokenA._address,
+          amountInput,
+          isBuy ? web3.utils.asciiToHex("buy") : web3.utils.asciiToHex("sell")
+        )
+        .send({ from: this.props.userAddress })
+        .on("transactionHash", (hash) => {})
+        .on("error", (error) => {
+          if (error.message.includes("User denied transaction signature")) {
+            this.setState({ is_loading: false });
+          }
+        });
+    } else {
+      console.log("Invalid token");
     }
-    
 
     this.setState({ is_loading: false });
     //this.updateOrders();
   };
 
-  executeLimit = async (priceInput, amountInput,tokenName, isBuy) => {
+  executeLimit = async (priceInput, amountInput, tokenName, isBuy) => {
     this.setState({ is_loading: true });
     const web3 = this.props.web3;
     var tokenToTrade;
-    console.log(tokenName.toUpperCase())
+    console.log(tokenName.toUpperCase());
     switch (tokenName.toUpperCase()) {
-      case "TOKENA" : {tokenToTrade = this.props.tokensToTrade.tokenA; break;}
-      case "TOKENB" : {tokenToTrade = this.props.tokensToTrade.tokenB; break}
-      case "TOKENC" : {tokenToTrade = this.props.tokensToTrade.tokenC; break}
+      case "TOKENA": {
+        tokenToTrade = this.props.tokensToTrade.tokenA;
+        break;
+      }
+      case "TOKENB": {
+        tokenToTrade = this.props.tokensToTrade.tokenB;
+        break;
+      }
+      case "TOKENC": {
+        tokenToTrade = this.props.tokensToTrade.tokenC;
+        break;
+      }
       // default : tokenToTrade = "";
     }
     console.log(tokenToTrade);
     if (tokenToTrade) {
       await this.props.dex.methods
-      .executeLimitOrder(
-        this.props.token._address,
-        tokenToTrade._address,
-        web3.utils.toHex(web3.utils.toWei(priceInput)),
-        amountInput,
-        isBuy
-      )
-      .send({ from: this.props.userAddress })
-      .on("transactionHash", (hash) => {})
-      .on("error", (error) => {
-        if (error.message.includes("User denied transaction signature")) {
-          this.setState({ is_loading: false });
-        }
-      });
-    }else {
-      console.log("Invalid token")
+        .executeLimitOrder(
+          this.props.token._address,
+          tokenToTrade._address,
+          web3.utils.toHex(web3.utils.toWei(priceInput)),
+          amountInput,
+          isBuy
+        )
+        .send({ from: this.props.userAddress })
+        .on("transactionHash", (hash) => {})
+        .on("error", (error) => {
+          if (error.message.includes("User denied transaction signature")) {
+            this.setState({ is_loading: false });
+          }
+        });
+    } else {
+      console.log("Invalid token");
     }
-    
 
     this.setState({ is_loading: false });
     //this.updateOrders();
@@ -148,32 +163,33 @@ class TradeToken extends React.Component {
   //   //this.updateOrders();
   // };
 
-
-
   render() {
-          var content
-          if (this.state.is_loading) {
-            content = (
-              <p id="loader" className="text-center">
-                Loading...
-              </p>
-            );
-          } else {
-            content = (
-              <AllGlobalOffers
-                userAddress={this.props.userAddress}
-                token={this.props.token}
-                tokensToTrade={this.props.tokensToTrade}
-                dex={this.props.dex}
-                web3={this.props.web3}
-          />
-            );}
+    var content;
+    if (this.state.is_loading) {
+      content = (
+        <Alert className="text-black" key="warning" variant="warning">
+          <b>LOADING...</b>
+        </Alert>
+      );
+    } else {
+      content = (
+        <AllGlobalOffers
+          userAddress={this.props.userAddress}
+          token={this.props.token}
+          tokensToTrade={this.props.tokensToTrade}
+          dex={this.props.dex}
+          web3={this.props.web3}
+        />
+      );
+    }
     return (
-
       <div className="TradeToken">
         <div>
-        <TabPage executeLimit = {this.executeLimit} executeMarket = {this.executeMarket}/>
-          </div>
+          <TabPage
+            executeLimit={this.executeLimit}
+            executeMarket={this.executeMarket}
+          />
+        </div>
 
         {content}
       </div>
