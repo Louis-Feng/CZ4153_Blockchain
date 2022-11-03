@@ -8,7 +8,7 @@ import TabPage from "./components/tabpage";
 //   Testnet,
 // } from "./bank.js";
 
-// import Web3 from "web3";
+import Web3 from "web3";
 import BankJS from "./contracts/Bank.json";
 import detectEthereumProvider from "@metamask/detect-provider";
 // import TabPage from "./components/tabpage";
@@ -65,8 +65,8 @@ class TradeToken extends React.Component {
         // this.props.tokensToTrade.tokenA._address,
         amountInput,
         isBuy
-        ? web3.utils.asciiToHex("buy")
-          : web3.utils.asciiToHex("sell")
+        ? Web3.utils.asciiToHex("buy")
+          : Web3.utils.asciiToHex("sell")
       )
       .send({ from: this.props.userAddress })
       .on("transactionHash", (hash) => {})
@@ -90,10 +90,10 @@ class TradeToken extends React.Component {
     var tokenToTrade;
     console.log(tokenName.toUpperCase())
     switch (tokenName.toUpperCase()) {
-      case "TOKENA" : tokenToTrade = this.props.tokensToTrade.tokenA;
-      case "TOKENB" : tokenToTrade = this.props.tokensToTrade.tokenB;
-      case "TOKENC" : tokenToTrade = this.props.tokensToTrade.tokenC;
-      default : tokenToTrade = "";
+      case "TOKENA" : {tokenToTrade = this.props.tokensToTrade.tokenA; break;}
+      case "TOKENB" : {tokenToTrade = this.props.tokensToTrade.tokenB; break}
+      case "TOKENC" : {tokenToTrade = this.props.tokensToTrade.tokenC; break}
+      // default : tokenToTrade = "";
     }
     console.log(tokenToTrade);
     if (tokenToTrade) {
@@ -101,7 +101,7 @@ class TradeToken extends React.Component {
       .executeLimitOrder(
         this.props.token._address,
         tokenToTrade._address,
-        web3.utils.toHex(web3.utils.toWei(priceInput)),
+        Web3.utils.toHex(Web3.utils.toWei(priceInput)),
         amountInput,
         isBuy
       )

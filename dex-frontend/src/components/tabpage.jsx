@@ -273,6 +273,8 @@ class TabPage extends Component {
                     <div>
                       <MarketOrderInfoCardContainer
                         tokenToTrade={this.state.tokenToTrade}
+                        executeLimit = {this.props.executeLimit}
+                        executeMarket = {this.props.executeMarket}
                       ></MarketOrderInfoCardContainer>
                     </div>
                   </TabPage>
@@ -348,6 +350,8 @@ class TabPage extends Component {
                     <div>
                       <LimitOrderInfoCardContainer
                         tokenToTrade={this.state.tokenToTrade}
+                        executeLimit = {this.props.executeLimit}
+                        executeMarket = {this.props.executeMarket}
                       ></LimitOrderInfoCardContainer>
                     </div>
                   </TabPage>

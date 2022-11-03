@@ -36,7 +36,6 @@ class MarketOrderInfoCard extends Component {
     console.log("refresh prevented");
     console.log("token to trade: ", this.state.tokenToTrade);
     console.log("hello from ", this.state.orderType);
-    console.log(this.state.price);
     console.log(this.state.amount);
     if (parseFloat(this.state.amount) <= 0) {
       alert("Please input positive values");

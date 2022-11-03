@@ -5,12 +5,19 @@ import Form from "react-bootstrap/Form";
 import Badge from "react-bootstrap/Badge";
 
 class LimitOrderInfoCard extends Component {
-  state = {
-    orderType: this.props.orderType,
-    price: 0,
-    amount: 0,
-    tokenToTrade: this.props.tokenToTrade,
-  };
+  
+  constructor(props) {
+    super(props);
+    this.state = {
+      orderType: this.props.orderType,
+      price: 0,
+      amount: 0,
+      tokenToTrade: this.props.tokenToTrade,
+    };
+    this.onSubmit = this.onSubmit.bind(this);
+    // this.handelInputAmountChange = this.handelInputAmountChange.bind(this);
+    // this.handelOrderTypeChange = this.handelOrderTypeChange.bind(this);
+  }
   componentDidUpdate(prevProps, preState) {
     if (preState.tokenToTrade !== this.props.tokenToTrade) {
       this.setState({ tokenToTrade: this.props.tokenToTrade });
@@ -24,6 +31,25 @@ class LimitOrderInfoCard extends Component {
     console.log("hello from ", this.state.orderType);
     console.log(this.state.price);
     console.log(this.state.amount);
+    if (parseFloat(this.state.amount) <= 0) {
+      alert("Please input positive values");
+    } else {
+      if (this.props.orderType === "Buy") {
+        this.props.executeLimit(
+          this.state.price,
+          this.state.amount,
+          this.state.tokenToTrade,
+          true
+        );
+      } else if (this.props.orderType === "Sell") {
+        this.props.executeLimit(
+          this.state.price,
+          this.state.amount,
+          this.state.tokenToTrade,
+          false
+        );
+      }
+    }
   };
 
   render() {

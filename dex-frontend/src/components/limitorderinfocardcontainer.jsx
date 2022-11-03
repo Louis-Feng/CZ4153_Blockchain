@@ -26,10 +26,14 @@ class LimitOrderInfoCardContainer extends Component {
           <LimitOrderInfoCard
             tokenToTrade={this.state.tokenToTrade}
             orderType="Buy"
+            executeLimit = {this.props.executeLimit}
+            executeMarket = {this.props.executeMarket}
           ></LimitOrderInfoCard>
           <LimitOrderInfoCard
             tokenToTrade={this.state.tokenToTrade}
             orderType="Sell"
+            executeLimit = {this.props.executeLimit}
+            executeMarket = {this.props.executeMarket}
           ></LimitOrderInfoCard>
         </div>
       </React.Fragment>
