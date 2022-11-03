@@ -33,7 +33,7 @@ accounts[0] will be the issuer of Token A, Token B and Token C.
 4. go to localhost:3000
 
 ## 2. Roles
-### 2.1 Cental Bank
+### 2.1 Central Bank
 To get BasicToken to execute trade in our smart contracts, the user needs to use his ETH and swap BasicToken with the central bank (1 ETH = 1 BasicToken). The user can withdraw their BasicToken and get back corresponding amount of ETH
 ### 2.2 Issuer 
 The Ganache accounts[0] will be the issuer of Token A, B and C in the Ganache network, with a total supply of 1,000,000 each. The issuer will sell these tokens to the market at a reasonable price. 
