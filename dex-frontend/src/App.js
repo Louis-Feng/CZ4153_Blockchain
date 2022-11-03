@@ -183,7 +183,7 @@ class App extends Component {
                     dex={this.state.dex}
                     token={this.state.token}
                     tokensToTrade={this.state.tokensToTrade}
-                    web3={this.props.web3}
+                    web3={this.state.web3Provider}
                   />
                 }
               />
