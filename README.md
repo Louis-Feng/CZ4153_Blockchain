@@ -62,5 +62,6 @@ The order is placed "at the limit": Limit orders set the maximum or minimum pric
 
 
 ### 4.3 Order Cancellation 
-The user can choose to cancel his order if it has not been executed yet. The lower_priority pointer of previous offer will point to the next offer while the higher_priority pointer of the next offer will point to the previous offer (linked list element removal process).
+At a given price, each offer stored has a unique priority. Therefore, given price and priority, a unique offer can be removed. On the webpage, users can see all the buy/sell offers they made and choose to remove any one of the unfulfilled/partially fulfilled offers.
+The lower_priority pointer of previous offer will point to the next offer while the higher_priority pointer of the next offer will point to the previous offer (linked list element removal process).
 ![Flowchart (3)](https://user-images.githubusercontent.com/61575406/199650901-a7f813ae-0dde-4f46-8011-6093e6049756.jpg)
