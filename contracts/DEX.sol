@@ -741,14 +741,19 @@ contract DEX {
         IERC20 basicToken = IERC20(_basicToken);
         IERC20 desiredToken = IERC20(_token);
 
+        basicToken.approve(msg.sender, _price.mul(_amount));
+        desiredToken.approve(msg.sender, _amount.mul(1e18));
+
         if (_isBuy)
         {   require(
                 basicToken.balanceOf(msg.sender) >= (_price.mul(_amount)),
                 "executeLimitOrder: the WETH balance < ETH required."
             );
+
+            
         } else {
             require(
-                desiredToken.balanceOf(msg.sender) >= _amount,
+                desiredToken.balanceOf(msg.sender) >= _amount.mul(1e18),
                 "executeLimitOrder: the token amount balance < amount required."
             );
         }
@@ -799,7 +804,7 @@ contract DEX {
                                 "executeLimitOrder: insufficient ether balance."
                             );
                             // approve exchange to move token to maker
-                            basicToken.approve(msg.sender, totalEtherToTrade);
+                            //basicToken.approve(msg.sender, totalEtherToTrade);
 
                             basicToken.transferFrom(
                                 msg.sender,
@@ -807,7 +812,7 @@ contract DEX {
                                 totalEtherToTrade
                             );
 
-                            desiredToken.approve(currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker, currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount.mul(1e18));
+                            //desiredToken.approve(currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker, currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount.mul(1e18));
 
                             desiredToken.transferFrom(
                                 currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker,
@@ -820,7 +825,7 @@ contract DEX {
                                 "executeLimitOrder: insufficient ether balance."
                             );
                             // approve exchange to move token to maker
-                            basicToken.approve(currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker, totalEtherToTrade);
+                            //basicToken.approve(currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker, totalEtherToTrade);
 
                             basicToken.transferFrom(
                                 currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker,
@@ -828,7 +833,7 @@ contract DEX {
                                 totalEtherToTrade
                             );
 
-                            desiredToken.approve(msg.sender, currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount.mul(1e18));
+                            //desiredToken.approve(msg.sender, currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_amount.mul(1e18));
 
                             desiredToken.transferFrom(
                                 msg.sender,
@@ -855,7 +860,7 @@ contract DEX {
                                 "executeLimitOrder: insufficient ether balance."
                             );
 
-                            basicToken.approve(msg.sender, totalEtherToTrade);
+                            //basicToken.approve(msg.sender, totalEtherToTrade);
 
                             basicToken.transferFrom(
                                 msg.sender,
@@ -863,7 +868,7 @@ contract DEX {
                                 totalEtherToTrade
                             );
 
-                            desiredToken.approve(currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker, amountLeftToTrade.mul(1e18));
+                            //desiredToken.approve(currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker, amountLeftToTrade.mul(1e18));
 
                             desiredToken.transferFrom(
                                 currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker,
@@ -877,7 +882,7 @@ contract DEX {
                                 "executeLimitOrder: insufficient ether balance."
                             );
 
-                            basicToken.approve(currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker, totalEtherToTrade);
+                            //basicToken.approve(currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker, totalEtherToTrade);
 
                             basicToken.transferFrom(
                                 currentToken.Book[orderType].prices[currentTradePrice].offer_list[offerPtr].offer_maker,
@@ -885,7 +890,7 @@ contract DEX {
                                 totalEtherToTrade
                             );
 
-                            desiredToken.approve(msg.sender, amountLeftToTrade.mul(1e18));
+                            //desiredToken.approve(msg.sender, amountLeftToTrade.mul(1e18));
 
                             desiredToken.transferFrom(
                                 msg.sender,
