@@ -54,7 +54,8 @@ In this project, we are using a **central limit order book (CLOB)**. It matches 
 ## 4. Supported Trades
 ### 4.1 Market Order (Buy and Sell)
 A market order is an instruction by a user to a broker to buy or sell tokens at the best available price in the current financial market. The user will only input amount of token he wants, and the order will be executed as long as there is enough amount of orders.
-![Flowchart (6)](https://user-images.githubusercontent.com/61575406/200022074-296a1a32-0b16-42f7-8dae-62648648fd9f.jpg)
+![Flowchart (8)](https://user-images.githubusercontent.com/61575406/200024090-385b5094-a3d1-4e14-a21e-72f6d2e7db64.jpg)
+
 
 
 ### 4.2 Limit Order (Buy and Sell)
