@@ -58,7 +58,8 @@ A market order is an instruction by a user to a broker to buy or sell tokens at 
 
 ### 4.2 Limit Order (Buy and Sell)
 The order is placed "at the limit": Limit orders set the maximum or minimum price at which you are willing to buy or sell. The user will input the price and amount of the order. For buy limit order, it will only be executed when the sell order's price is lower than the input price. For sell limit order, it will only be executed when the buy order's price is higher than the input price. 
-![Flowchart (5)](https://user-images.githubusercontent.com/61575406/199659955-88b22629-4c47-4f2c-9712-453e3712e36f.jpg)
+![Flowchart (6)](https://user-images.githubusercontent.com/61575406/200021683-f0f19eb9-fbaf-448e-9e44-f35e51ea66d1.jpg)
+
 
 
 ### 4.3 Order Cancellation 
