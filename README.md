@@ -65,3 +65,40 @@ The order is placed "at the limit": Limit orders set the maximum or minimum pric
 At a given price, each offer stored has a unique priority. Therefore, given price and priority, a unique offer can be removed. On the webpage, users can see all the buy/sell offers they made and choose to remove any one of the unfulfilled/partially fulfilled offers.
 The lower_priority pointer of previous offer will point to the next offer while the higher_priority pointer of the next offer will point to the previous offer (linked list element removal process).
 ![Flowchart (3)](https://user-images.githubusercontent.com/61575406/199650901-a7f813ae-0dde-4f46-8011-6093e6049756.jpg)
+
+## 5. DEX Features
+### 5.1 Integration with Metamask & User Profile
+The DEX is integrated with Metamask and is able to display all the token amounts the user holds.
+![user profile](https://user-images.githubusercontent.com/61575406/199879657-5abb2010-f0b5-4764-8b10-1e999f036b99.png)
+
+### 5.2 Basic Token & ETH Swap
+<img width="632" alt="Screenshot 2022-11-04 at 11 37 03 AM" src="https://user-images.githubusercontent.com/61575406/199879998-4db59e7e-e3f8-4379-8ab2-f0ea110193f3.png">
+
+### 5.3 Basic Token Withdraw
+<img width="633" alt="Screenshot 2022-11-04 at 11 38 03 AM" src="https://user-images.githubusercontent.com/61575406/199880194-3b4a7ff1-8727-4935-b3cc-00212d38db5d.png">
+
+### 5.4 Trades
+#### 5.4.1 Limit Order (Buy/Sell)
+![Token Selection](https://user-images.githubusercontent.com/61575406/199880511-0b61c259-99ef-40c6-9915-1c58b9d18b9d.png)
+Select token type to trade
+![Input Trade](https://user-images.githubusercontent.com/61575406/199880505-04d4f313-0ca1-4a02-8844-dc649354a40f.png)
+Input Price & Amount of Limit Order
+
+#### 5.4.2 Market Order (Buy/Sell)
+![market order](https://user-images.githubusercontent.com/61575406/199880797-196e1420-e163-4c44-943b-ebb0ccbc6e3a.png)
+
+### 5.5 Display of Global Order Book
+The DEX is able to display a global order book which contains the orders from all users in the system.
+![Global order book](https://user-images.githubusercontent.com/61575406/199880913-5da2d43a-86a2-4c2f-9814-33ae63f61a93.png)
+
+### 5.6 Display of User Order Book
+The DEX is able to display a user order book which only contains the orders made by the current user
+![user order book](https://user-images.githubusercontent.com/61575406/199881031-afbeb4f6-4c14-4863-b0ea-bed2d5cd58a7.png)
+
+### 5.7 Cancellation of Trade
+The DEX allows the user to cancel his own order if the order has not been executed yet
+![user order book](https://user-images.githubusercontent.com/61575406/199881272-66bf54d4-b158-4c72-9d24-d8e20dc1bc66.png)
+
+
+.
+
