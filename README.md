@@ -89,7 +89,8 @@ Select token type to trade
 Input Price & Amount of Limit Order
 
 #### 5.4.2 Market Order (Buy/Sell)
-![market order](https://user-images.githubusercontent.com/61575406/199880797-196e1420-e163-4c44-943b-ebb0ccbc6e3a.png)
+![Flowchart (9)](https://user-images.githubusercontent.com/61575406/200108350-c86b5d52-7543-4753-875f-96565ec5db26.jpg)
+
 
 ### 5.5 Display of Global Order Book
 The DEX is able to display a global order book which contains the orders from all users in the system.
